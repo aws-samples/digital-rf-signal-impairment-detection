@@ -1,0 +1,21 @@
+.venv
+**/.venv
+*.swp
+package-lock.json
+__pycache__
+.pytest_cache
+.venv
+*.egg-info
+**/cdk.context.json
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+#source 
+source.bat
+source.bat
+**/output.txt
+**/test.sh
+.DS_Store
+**/.DS_Store
