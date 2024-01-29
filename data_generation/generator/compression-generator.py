@@ -81,7 +81,7 @@ points = np.append(points, points4, axis=0)
 
 X = points[:, 0] + 1j * points[:, 1]
 
-np.save("./data/compression-%s.txt" % time.time(), X)
+np.save("./data/qpsk/compression/compression-%s.txt" % time.time(), X)
 
 # np.savetxt("./data/compression-%s.txt" % time.time(), points)
 
