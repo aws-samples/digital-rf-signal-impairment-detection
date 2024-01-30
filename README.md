@@ -90,7 +90,7 @@ docker build . -t gnuradio-image
 
 ##### Running Scripts
 
-First create the directory structure to store the training data. 
+First create the directory structure to store the training data for each modulation scheme. 
 
 ```
 cd ../../data_generation/generator
@@ -98,13 +98,14 @@ cd ../../data_generation/generator
 cd ../..
 ```
 
-Enter the docker container with the following
+Enter the docker container with the following to generate low SNR noise and phase noise impairments
 
 ```
 docker run -it --rm -v $PWD/data_generation:/temp/data gnuradio-image
 ```
 
-Now, within the container, run the following
+Now, within the container, run the following to generate compression (amplifier gain errors) files
+(QPSK only at this time)
 
 ```
 cd /temp/data/generator
