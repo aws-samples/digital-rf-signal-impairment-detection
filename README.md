@@ -81,7 +81,7 @@ cd SageMaker
 git clone https://github.com/aws-samples/digital-rf-signal-impairment-detection.git
 ```
 
-Navigate to the docker_build directory and build the container
+Navigate to the docker_build directory and build the container - this may take up to 5 minutes
 
 ```
 cd digital-rf-signal-impairment-detection/data_generation/docker_build
@@ -90,10 +90,10 @@ docker build . -t gnuradio-image
 
 ##### Running Scripts
 
-First create the directory structure to store the training data. Run the following commands from the root of this directory.
+First create the directory structure to store the training data. 
 
 ```
-cd data_generation/generator
+cd ../../data_generation/generator
 ./create_folders.sh
 cd ../..
 ```
