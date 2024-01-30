@@ -11,8 +11,8 @@ Lastly, the solution should be performant in terms of compute footprint to enabl
 ### IQ Constellation Impairment Classes
 
 The following impairment classes are considered in this solution. Its expected that the feature engineering 
-process of this solution can be extended to scale for additional impairment classes such as in-band spurs 
-and IQ gain imbalance [link](https://rahsoft.com/2022/10/16/understanding-constellation-distortions/)
+process of this solution can be extended to scale for additional impairment classes such as [in-band spurs 
+and IQ gain imbalance](https://rahsoft.com/2022/10/16/understanding-constellation-distortions/)
 
 <!-- Row 1 -->
 <div align="center">
