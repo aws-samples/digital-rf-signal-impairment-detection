@@ -66,7 +66,9 @@ The following flowgraph is used to generate data. Normal, Phase Noise, and Inter
 
 ![Flowgraph](repository_images/flowgraph.png)
 
-Compression was not achieved using the flowgraph and is suggested as future work. Compression was generated using a mathematical approach for QPSK only, see generator/compression-generator.py.
+Compression was not achieved using the above flowgraph and is suggested as future work. 
+Compression was generated using a mathematical approach for QPSK only, see [compression-generator.py](./data_generation/generator/compression-generator.py)
+
 
 ##### Creating the GNURadio Docker Image
 
