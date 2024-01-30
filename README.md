@@ -1,10 +1,18 @@
 ## Detecting digital RF signal impairments in IQ Constellation plots
 
-This repository demonstrates applying a combination of statistical methods and machine learning to detect signal impairments in digital RF signals. The solution relies on processing data in an IQ Constellation diagram. For background on digital RF signal impairments, see the following [video](https://www.youtube.com/watch?v=aQd_zBytid8). The goal of this repository is to demonstrate using a software approach rather than more traditional hardware solutions. Another consideration of this solution is using methods which can scale the number of blobs in the modulation and coding scheme, for example QPSK to 32APSK. Lastly, the solution should be performant in terms of compute footprint to enable low cost analysis and edge deployment.
+This repository demonstrates applying a combination of statistical methods and machine learning to detect signal impairments in digital RF signals. The 
+solution relies on processing data in an IQ Constellation diagram. For background on digital RF signal impairments, 
+see the following [video](https://www.youtube.com/watch?v=aQd_zBytid8). The goal of this repository is to 
+demonstrate using a software approach rather than more traditional hardware solutions. 
+Another consideration of this solution is using methods which can scale the number of blobs in the 
+modulation and coding scheme, for example QPSK to 32APSK. 
+Lastly, the solution should be performant in terms of compute footprint to enable low cost analysis and edge deployment.
 
 ### IQ Constellation Impairment Classes
 
-The following impairment classes are considered in this solution. Its expected that the feature engineering process of this solution can be extended to scale for additional impairment classes such as in-band spurs and imbalance.
+The following impairment classes are considered in this solution. Its expected that the feature engineering 
+process of this solution can be extended to scale for additional impairment classes such as in-band spurs 
+and IQ gain imbalance [link](https://rahsoft.com/2022/10/16/understanding-constellation-distortions/)
 
 <!-- Row 1 -->
 <div align="center">
