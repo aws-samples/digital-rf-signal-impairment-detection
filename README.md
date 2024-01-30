@@ -43,7 +43,8 @@ and IQ gain imbalance](https://rahsoft.com/2022/10/16/understanding-constellatio
 
 ### Environment Setup
 
-The following steps will utilize a [SageMaker Notebook](https://aws.amazon.com/sagemaker/notebooks/) as it provides a single interface for us to both run [Jupyter Notebook](https://jupyter.org/) files and build [Docker Containers](https://www.docker.com/resources/what-container/).
+The following steps will utilize a [SageMaker Notebook](https://aws.amazon.com/sagemaker/notebooks/) as it provides a single interface 
+for us to both run [Jupyter Notebook](https://jupyter.org/) files and build [Docker Containers](https://www.docker.com/resources/what-container/).
 
 We create a Notebook Instance with the following settings.
 ![Notebook](repository_images/notebook_setup.png)
@@ -52,8 +53,14 @@ Once the infrastructure is provisioned, we can **Open Jupyter**.
 
 ### Generating Data
 
-Given the solution relies on statistics and machine learning, we need to generate data to train on. For this task, we'll look to [GNURadio](https://www.gnuradio.org/)
-A Docker image is used to run a GNU Radio flowgraph in a headless environment. The flowgraph uses a DVB-S2X modulator to create constellation plots and save to a file. Signal error is introduced in the flowgraph which can be randomly varied to simulate each of the impairment classes. We use this flowgraph to generate a large number of samples for each of the impairment classes. Those samples will train a Classification Machine Learning model to determine whether an impairment is present in future IQ Constellation plots.
+Given the solution relies on statistics and machine learning, we need to generate data to train on. 
+For this task, we'll look to [GNURadio](https://www.gnuradio.org/), a popular open-source software radio ecosystem.
+
+A Docker image is used to run a GNU Radio flowgraph in a headless environment. 
+The flowgraph uses a [DVB-S2X](https://en.wikipedia.org/wiki/DVB-S2X) modulator to create IQ constellation plots 
+and save to a file. Signal error is introduced in the flowgraph which can be randomly varied to simulate each of the impairment classes. 
+We use this flowgraph to generate a large number of samples for each of the impairment classes. 
+Those samples will train a Classification Machine Learning model to determine whether an impairment is present in future IQ Constellation plots.
 
 The following flowgraph is used to generate data. Normal, Phase Noise, and Interference impairment classes are generated using GNU Radio.
 
