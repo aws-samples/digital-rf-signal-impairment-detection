@@ -11,12 +11,12 @@ The following impairment classes are considered in this solution. Its expected t
   <!-- Image 1 with Title -->
   <figure style="display:inline-block;">
     <img src="repository_images/normal_plot.png" width="200" alt="Image 1">
-    <figcaption>Normal</figcaption>
+    <figcaption>Ideal - 16QAM</figcaption>
   </figure>
   <!-- Image 2 with Title -->
   <figure style="display:inline-block; margin-left:20px;">
     <img src="repository_images/noise_plot.png" width="200" alt="Image 2">
-    <figcaption>Wideband Noise</figcaption>
+    <figcaption>Noise (low SNR)</figcaption>
   </figure>
 </div>
 <!-- Row 2 -->
@@ -29,7 +29,7 @@ The following impairment classes are considered in this solution. Its expected t
   <!-- Image 4 with Title -->
   <figure style="display:inline-block; margin-left:20px;">
     <img src="repository_images/compression_plot.png" width="200" alt="Image 4">
-    <figcaption>Compression</figcaption>
+    <figcaption>Compression (amplitude gain noise)</figcaption>
   </figure>
 </div>
 
