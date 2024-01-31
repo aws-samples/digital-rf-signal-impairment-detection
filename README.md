@@ -139,6 +139,27 @@ This will yield results of either Normal, Phase Noise, Compression, or Interfere
 
 Run the [IQ-data-process-inference.ipynb](./notebooks/IQ-data-process-inference.ipynb) notebook to execute the preprocessing stage.
 
+### Summary
+
+This repository demonstrates applying statistical and machine learning methods to detect digital RF signal impairments in IQ Constellation diagrams. The solution is designed with compute efficiency in mind to enable cost effective inference and edge deployment scenarios. Inference results are published to an [Amazon Simple Storage Solution (S3)](https://aws.amazon.com/s3/) bucket to enable alerting and downstream analytics.
+
+### Future Improvements
+
+The following items are recognized as improvements to this solution:
+
+- Use GNU Radio to simulate compression
+- Use GNU Radio to simulate additional impairment classes
+- Enhance the feature engineering process to accommodate additional classes like in-band spurs
+  and IQ gain imbalance
+-
+
+### Known Issues
+
+The following issues are recognized:
+
+- Running the generator in the docker container results in warnings which does not impact the data generation process
+-
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
