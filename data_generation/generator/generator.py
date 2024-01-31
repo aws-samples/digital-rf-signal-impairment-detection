@@ -20,7 +20,7 @@ classes = [
     "PHASE_NOISE__ALPHA_MAX": 0.5,
     "NOISE_SOURCE_MIN": 0.0001,
     "NOISE_SOURCE_MAX": 0.01,
-    "OUTPUT_FILE_PATH": "./data/%s/%s/phase_noise-%s.txt"
+    "OUTPUT_FILE_PATH": "./data/%s/%s/phase_noise-%s.npy"
 }},
 {"class_name": "normal",
  "CONFIG": {
@@ -30,7 +30,7 @@ classes = [
     "PHASE_NOISE__ALPHA_MAX": 0,
     "NOISE_SOURCE_MIN": 0.01,
     "NOISE_SOURCE_MAX": 0.02,
-    "OUTPUT_FILE_PATH": "./data/%s/%s/normal-%s.txt"
+    "OUTPUT_FILE_PATH": "./data/%s/%s/normal-%s.npy"
 }},
 {"class_name": "interference",
  "CONFIG":  {
@@ -40,7 +40,7 @@ classes = [
     "PHASE_NOISE__ALPHA_MAX": 0,
     "NOISE_SOURCE_MIN": 0.03,
     "NOISE_SOURCE_MAX": 0.04,
-    "OUTPUT_FILE_PATH": "./data/%s/%s/interference-%s.txt"
+    "OUTPUT_FILE_PATH": "./data/%s/%s/interference-%s.npy"
 }}]
 # TODO use gnuradio to generate compression
 # COMPRESSION = {
