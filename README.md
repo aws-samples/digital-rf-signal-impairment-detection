@@ -20,33 +20,6 @@ and IQ gain imbalance](https://rahsoft.com/2022/10/16/understanding-constellatio
 | ![](repository_images/phase_noise_plot.png) | ![](repository_images/compression_plot.png) |
 |                 Phase Noise                 |     Compression (amplitude gain noise)      |
 
-<!-- Row 1 -->
-<div align="center">
-  <!-- Image 1 with Title -->
-  <figure style="display:inline-block;">
-    <img src="repository_images/normal_plot.png" width="200" alt="Image 1">
-    <figcaption>Ideal - 16QAM</figcaption>
-  </figure>
-  <!-- Image 2 with Title -->
-  <figure style="display:inline-block; margin-left:20px;">
-    <img src="repository_images/noise_plot.png" width="200" alt="Image 2">
-    <figcaption>Noise (low SNR)</figcaption>
-  </figure>
-</div>
-<!-- Row 2 -->
-<div align="center" style="margin-top:20px;">
-  <!-- Image 3 with Title -->
-  <figure style="display:inline-block;">
-    <img src="repository_images/phase_noise_plot.png" width="200" alt="Image 3">
-    <figcaption>Phase Noise</figcaption>
-  </figure>
-  <!-- Image 4 with Title -->
-  <figure style="display:inline-block; margin-left:20px;">
-    <img src="repository_images/compression_plot.png" width="200" alt="Image 4">
-    <figcaption>Compression (amplitude gain noise)</figcaption>
-  </figure>
-</div>
-
 ### Environment Setup
 
 The following steps will utilize a [SageMaker Notebook](https://aws.amazon.com/sagemaker/notebooks/) as it provides a single interface
