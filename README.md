@@ -122,14 +122,26 @@ exit
 
 ### Preprocessing
 
-The approach for solving impairment classification first relies on feature engineering using a statistical approach. If we consider the following constellation plot, we note 32 blobs which represent 32APSK modulation and coding. We first apply [K-Means Clustering](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html) to find each of the blobs within the data sample. Its assumed we know the number of blobs ahead of time, although a future enhancement is to design without this assumption. Given each blob, we apply the Covariance Error Ellipse which tells us the [eccentricity](<https://en.wikipedia.org/wiki/Eccentricity_(mathematics)>). Further, the density, rotation, and ratio of major/minor axis of the ellipse can be extracted as features and recorded into a tabular data format.
+The approach for solving impairment classification first relies on feature engineering using a statistical approach. 
+If we consider the following constellation plot, we note 32 blobs which represent 32APSK modulation and coding. 
+We first apply [K-Means Clustering](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html) 
+to detect each of the blobs within the data sample. 
+Its assumed we know the number of blobs ahead of time, although a future enhancement is to design without this assumption,
+in order to handle the typical Satellite Communications use-case of ACM (Adaptive Coding & Modulation).
+Given each blob, we apply the Covariance Error Ellipse which tells us the [eccentricity](<https://en.wikipedia.org/wiki/Eccentricity_(mathematics)>). 
+Further, the density, rotation, and ratio of major/minor axis of the ellipse can be extracted as features and recorded into a tabular data format.
 ![IQ Plot](repository_images/raw_iq_data.png)
-We can see the result of applying K-Means Clustering, Covariance Error Ellipse, and solving for metrics like density, rotation, and ratio of major to minor axis. Note, color coding of the individual blobs, ellipse boundaries, and color coded major and minor ellipse axes.
+We can see the result of applying K-Means Clustering, Covariance Error Ellipse, and solving for metrics like density, rotation, 
+and ratio of major to minor axis. 
+Note, color coding of the individual blobs, ellipse boundaries, and color coded major and minor ellipse axes.
 ![Metric Extraction](repository_images/feature_extraction.png)
 
 ### Training
 
-We use the [Autogluon](https://auto.gluon.ai/) library to train a tabular classifier on the features which have been extracted during the preprocessing step. Autogluon will train multiple models based on the training data. As output, we're provided with metrics describing model performance. Autogluon will automatically use the model with the highest performance and lowest inference latency.
+We use the [Autogluon](https://auto.gluon.ai/) library to train a tabular classifier on the features which 
+have been extracted during the preprocessing step. 
+Autogluon will train multiple models based on the training data, with metrics describing model performance. 
+Autogluon will automatically use the model with the highest performance and lowest inference latency.
 ![Autogluon](repository_images/autogluon.png)
 
 ### Inference
