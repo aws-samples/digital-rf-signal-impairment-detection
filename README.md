@@ -119,6 +119,8 @@ Note, color coding of the individual blobs, ellipse boundaries, and color coded 
 
 ![Metric Extraction](repository_images/feature_extraction.png)
 
+Run the [IQ-data-pre-process.ipynb](./notebooks/IQ-data-pre-process.ipynb) notebook to execute the preprocessing stage.
+
 ### Training
 
 We use the [Autogluon](https://auto.gluon.ai/) library to train a tabular classifier on the features which
@@ -128,10 +130,14 @@ Autogluon will automatically use the model with the highest performance and lowe
 
 ![Autogluon](repository_images/autogluon.png)
 
+Run the [IQ-data-train-classifier.ipynb](./notebooks/IQ-data-train-classifier.ipynb) notebook to execute the training stage.
+
 ### Inference
 
 We can load the Autogluon model and run inference on sample IQ Constellation plots in the _inference/_ folder.
 This will yield results of either Normal, Phase Noise, Compression, or Interference per IQ modulation.
+
+Run the [IQ-data-process-inference.ipynb](./notebooks/IQ-data-process-inference.ipynb) notebook to execute the preprocessing stage.
 
 ## Security
 
