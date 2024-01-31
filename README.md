@@ -28,7 +28,7 @@ for us to both run [Jupyter Notebook](https://jupyter.org/) files and build [Doc
 We create a Notebook Instance with the following settings.
 ![Notebook](repository_images/notebook_setup.png)
 
-Once the infrastructure is provisioned, we can **Open Jupyter**.
+Once the infrastructure is provisioned, we can **Open JupyterLab**.
 
 ### Generating Data
 
@@ -50,7 +50,7 @@ Compression was generated using a mathematical approach for QPSK only, see [comp
 
 ##### Creating the GNURadio Docker Image
 
-Within the Jupyter environment, first open a terminal with **New -> Terminal**.
+Within the Jupyter environment, first open a terminal with **File -> New -> Terminal**.
 
 Navigate to the SageMaker directory and clone this repository
 
@@ -88,7 +88,7 @@ Now, within the container, run the following to generate compression (amplifier 
 ```
 cd /temp/data/generator
 python generator.py
-for i in {1..100}; do python compression-generator.py; done
+for i in {1..100}; do python compression-generator.py; done; echo "Generation Complete"
 ```
 
 We can exit the container. We now have training data located at

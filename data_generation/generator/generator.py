@@ -4,6 +4,8 @@ import random
 import time
 import os
 
+print("Starting data generation, ignore the following two warnings")
+
 # Configure the number of files in the dataset
 NUMBER_OF_FILES = 100
 modcod = ["qpsk", "8psk", "16apsk", "32apsk"]
@@ -67,3 +69,5 @@ for mod in modcod:
 file_path = 'data/output-.txt'
 if os.path.exists(file_path):
     os.remove(file_path)
+
+print("Complete, exiting data generation")
