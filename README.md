@@ -147,7 +147,7 @@ Autogluon will automatically use the model with the highest performance and lowe
 ### Inference
 
 We can load the Autogluon model and run inference on sample IQ Constellation plots in the _inference/_ folder.
-This will yield results of either Normal, Phase Noise, Compression, or Noise (low SNR) per IQ modulation. 
+This will yield results of either Normal, Phase Noise, Compression, or Interference per IQ modulation. 
 
 ## Security
 
