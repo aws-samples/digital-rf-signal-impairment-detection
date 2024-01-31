@@ -49,7 +49,7 @@ The following flowgraph is used to generate data. Normal, Phase Noise, and Inter
 Compression was not achieved using the above flowgraph and is suggested as future work.
 Compression was generated using a mathematical approach for QPSK only, see [compression-generator.py](./data_generation/generator/compression-generator.py)
 
-##### Creating the GNURadio Docker Image
+#### Creating the GNURadio Docker Image
 
 Within the Jupyter environment, first open a terminal with **File -> New -> Terminal**.
 
@@ -67,7 +67,7 @@ cd digital-rf-signal-impairment-detection/data_generation/docker_build
 docker build . -t gnuradio-image
 ```
 
-##### Running Scripts
+#### Running Scripts
 
 First create the directory structure to store the training data for each modulation scheme.
 
@@ -135,30 +135,29 @@ Run the [IQ-data-train-classifier.ipynb](./notebooks/IQ-data-train-classifier.ip
 ### Inference
 
 We can load the Autogluon model and run inference on sample IQ Constellation plots in the _inference/_ folder.
-This will yield results of either Normal, Phase Noise, Compression, or Interference per IQ modulation.
+This will yield results of either Normal, Phase Noise, Compression, or Interference per IQ modulation. Those inference insights will be published to an [Amazon Simple Storage Service (S3)](https://aws.amazon.com/s3/) bucket.
 
 Run the [IQ-data-process-inference.ipynb](./notebooks/IQ-data-process-inference.ipynb) notebook to execute the preprocessing stage.
 
 ### Summary
 
-This repository demonstrates applying statistical and machine learning methods to detect digital RF signal impairments in IQ Constellation diagrams. The solution is designed with compute efficiency in mind to enable cost effective inference and edge deployment scenarios. Inference results are published to an [Amazon Simple Storage Solution (S3)](https://aws.amazon.com/s3/) bucket to enable alerting and downstream analytics.
+This repository demonstrates applying statistical and machine learning methods to detect digital RF signal impairments in IQ Constellation diagrams. The solution is designed with compute efficiency in mind to enable cost effective inference or edge deployment scenarios. Inference results are published to an S3 bucket to enable alerting and downstream analytics.
 
 ### Future Improvements
 
 The following items are recognized as improvements to this solution:
 
-- Use GNU Radio to simulate compression
-- Use GNU Radio to simulate additional impairment classes
+- Use GNU Radio to simulate compression and additional impairment classes
 - Enhance the feature engineering process to accommodate additional classes like in-band spurs
   and IQ gain imbalance
--
+- Compare results of this solution against deep learning or computer vision alternatives
 
 ### Known Issues
 
 The following issues are recognized:
 
 - Running the generator in the docker container results in warnings which does not impact the data generation process
--
+- Ensure the _docker run_ command is run from the root of the repo so the _data_generation/_ folder mounts properly with the -v flag
 
 ## Security
 
