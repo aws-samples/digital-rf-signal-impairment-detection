@@ -26,6 +26,7 @@ The following steps will utilize a [SageMaker Notebook](https://aws.amazon.com/s
 for us to both run [Jupyter Notebook](https://jupyter.org/) files and build [Docker Containers](https://www.docker.com/resources/what-container/).
 
 We create a Notebook Instance with the following settings.
+
 ![Notebook](repository_images/notebook_setup.png)
 
 Once the infrastructure is provisioned, we can **Open JupyterLab**.
@@ -109,6 +110,7 @@ in order to handle the typical Satellite Communications use-case of ACM (Adaptiv
 Given each blob, we apply the Covariance Error Ellipse which tells us the [eccentricity](<https://en.wikipedia.org/wiki/Eccentricity_(mathematics)>).
 Further, the density, rotation, and ratio of major/minor axis of the ellipse can be extracted as features and recorded into
 a tabular data format.
+
 ![IQ Plot](repository_images/raw_iq_data.png)
 
 We can see the result of applying K-Means Clustering, Covariance Error Ellipse, and solving for metrics like density, rotation,
@@ -123,6 +125,7 @@ We use the [Autogluon](https://auto.gluon.ai/) library to train a tabular classi
 have been extracted during the preprocessing step.
 Autogluon will train multiple models based on the training data, with metrics describing model performance.
 Autogluon will automatically use the model with the highest performance and lowest inference latency.
+
 ![Autogluon](repository_images/autogluon.png)
 
 ### Inference
