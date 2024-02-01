@@ -5,7 +5,7 @@ solution relies on processing data in an IQ Constellation diagram. For backgroun
 see the following [video](https://www.youtube.com/watch?v=aQd_zBytid8). The goal of this repository is to
 demonstrate using a software approach rather than more traditional hardware solutions.
 Another consideration of this solution is using methods which can scale the number of blobs in the
-modulation and coding scheme, for example QPSK to 32APSK.
+modulation and coding scheme, for example [QPSK](https://en.wikipedia.org/wiki/Phase-shift_keying#Quadrature_phase-shift_keying_(QPSK)) to 32APSK.
 Lastly, the solution should be performant in terms of compute footprint to enable low cost analysis and edge deployment.
 
 ### IQ Constellation Impairment Classes
@@ -40,13 +40,13 @@ A Docker image is used to run a GNU Radio flowgraph in a headless environment.
 The flowgraph uses a [DVB-S2X](https://en.wikipedia.org/wiki/DVB-S2X) modulator to create IQ constellation plots
 and save to a file. Signal error is introduced in the flowgraph which can be randomly varied to simulate each of the impairment classes.
 We use this flowgraph to generate a large number of samples for each of the impairment classes.
-Those samples will train a Classification Machine Learning model to determine whether an impairment is present in future IQ Constellation plots.
+Those samples will train a Multi-Classification Machine Learning model to determine whether an impairment is present in future IQ Constellation plots.
 
 The following flowgraph is used to generate data. Normal, Phase Noise, and Interference impairment classes are generated using GNU Radio.
 
 ![Flowgraph](repository_images/flowgraph.png)
 
-Compression was not achieved using the above flowgraph and is suggested as future work.
+Compression was not achieved using the above flowgraph and is suggested as [future work](./README.md#Future Improvements).
 Compression was generated using a mathematical approach for QPSK only, see [compression-generator.py](./data_generation/generator/compression-generator.py)
 
 #### Creating the GNURadio Docker Image
