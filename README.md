@@ -141,7 +141,7 @@ Run the [IQ-data-process-inference.ipynb](./notebooks/IQ-data-process-inference.
 
 ### Summary
 
-This repository demonstrates applying statistical and machine learning methods to detect digital RF signal impairments in IQ Constellation diagrams. The solution is designed with compute efficiency in mind to enable cost effective inference or edge deployment scenarios. Inference results are published to an S3 bucket to enable alerting and downstream analytics.
+This repository demonstrates applying statistical and machine learning methods to detect digital RF signal impairments in IQ Constellation diagrams using AWS-Cloud. The solution is designed with compute efficiency in mind to enable cost effective inference or edge deployment use cases. Inference results are published to an S3 bucket to enable alerting and downstream analytics.
 
 ### Future Improvements
 
