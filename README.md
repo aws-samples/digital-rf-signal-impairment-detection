@@ -119,7 +119,8 @@ Note, color coding of the individual blobs, ellipse boundaries, and color coded 
 
 ![Metric Extraction](repository_images/feature_extraction.png)
 
-Run the [IQ-data-pre-process.ipynb](./notebooks/IQ-data-pre-process.ipynb) notebook to execute the preprocessing stage.
+Run the [IQ-data-pre-process.ipynb](./notebooks/IQ-data-pre-process.ipynb) notebook to execute the 
+preprocessing stage (Kernel -> Restart Kernel and run all cells)
 
 ### Training
 
