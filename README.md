@@ -123,7 +123,7 @@ Run the [IQ-data-pre-process.ipynb](./notebooks/IQ-data-pre-process.ipynb) noteb
 
 ### Training
 
-We use the [Autogluon](https://auto.gluon.ai/) library to train a tabular classifier on the features which
+Next, we use the [Autogluon](https://auto.gluon.ai/) library to train a tabular classifier on the features which
 have been extracted during the preprocessing step.
 Autogluon will train multiple models based on the training data, with metrics describing model performance.
 Autogluon will automatically use the model with the highest performance and lowest inference latency.
@@ -134,14 +134,20 @@ Run the [IQ-data-train-classifier.ipynb](./notebooks/IQ-data-train-classifier.ip
 
 ### Inference
 
-We can load the Autogluon model and run inference on sample IQ Constellation plots in the _inference/_ folder.
-This will yield results of either Normal, Phase Noise, Compression, or Interference per IQ modulation. Those inference insights will be published to an [Amazon Simple Storage Service (S3)](https://aws.amazon.com/s3/) bucket.
+Finally, we load the Autogluon model and run inference on sample IQ Constellation plots in the _inference/_ folder.
+This will yield results of either Normal, Phase Noise, Compression, or Interference per IQ modulation. 
+Those inference insights will be published to an [Amazon Simple Storage Service (S3)](https://aws.amazon.com/s3/) bucket.
 
-Run the [IQ-data-process-inference.ipynb](./notebooks/IQ-data-process-inference.ipynb) notebook to execute the preprocessing stage.
+A follow-on step could then include triggering an alarm via SNS if an abundance of particular errors were detected.
+
+Run the [IQ-data-process-inference.ipynb](./notebooks/IQ-data-process-inference.ipynb) notebook to execute the inference stage.
 
 ### Summary
 
-This repository demonstrates applying statistical and machine learning methods to detect digital RF signal impairments in IQ Constellation diagrams using AWS-Cloud. The solution is designed with compute efficiency in mind to enable cost effective inference or edge deployment use cases. Inference results are published to an S3 bucket to enable alerting and downstream analytics.
+This repository demonstrates applying statistical and machine learning methods to detect digital RF signal impairments 
+in IQ Constellation diagrams using AWS-Cloud. The solution is designed with compute efficiency in mind to enable 
+cost effective inference or edge deployment use cases. 
+Inference results are published to an S3 bucket to enable alerting and downstream analytics.
 
 ### Future Improvements
 
@@ -151,12 +157,13 @@ The following items are recognized as improvements to this solution:
 - Enhance the feature engineering process to accommodate additional classes like in-band spurs
   and IQ gain imbalance
 - Compare results of this solution against deep learning or computer vision alternatives
+- Accomodate larger modulation schemas eg 64-APSK
 
 ### Known Issues
 
 The following issues are recognized:
 
-- Running the generator in the docker container results in warnings which does not impact the data generation process
+- Running the generator in the docker container results in warnings. These do not impact the data generation process
 - Ensure the _docker run_ command is run from the root of the repo so the _data_generation/_ folder mounts properly with the _-v_ flag
 
 ## Security
