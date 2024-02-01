@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-#
-# SPDX-License-Identifier: GPL-3.0
-#
-# GNU Radio Python Flow Graph
-# Title: File Atsc Tx
-# GNU Radio version: 3.10.5.1
-
 from gnuradio import analog
 from gnuradio import blocks
 import numpy

@@ -157,7 +157,7 @@ The following items are recognized as improvements to this solution:
 The following issues are recognized:
 
 - Running the generator in the docker container results in warnings which does not impact the data generation process
-- Ensure the _docker run_ command is run from the root of the repo so the _data_generation/_ folder mounts properly with the -v flag
+- Ensure the _docker run_ command is run from the root of the repo so the _data_generation/_ folder mounts properly with the _-v_ flag
 
 ## Security
 
