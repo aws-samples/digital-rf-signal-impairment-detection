@@ -47,24 +47,4 @@ def confidence_ellipse(x, y, n_std=3.0):
     area = np.pi * major_length * minor_length
     density = num_inside / area
     
-    return {"ellipse": ellipse, "major_axis": major_axis, "minor_axis": minor_axis, "center": center, "density": density, "ratio": (major_length/minor_length), "axis": (distance_major < distance_minor)}
-
-# Check which line is closer to a given point
-def line_distance(l1, l2, p):
-    # Define the points
-    P1 = p
-    pa = l1[0]
-    pb = l1[1]
-    pc = l2[0]
-    pd = l2[1]
-
-    # Calculate the distances to the infinite lines
-    dist_L1 = abs((pb[1]-pa[1])*P1[0] - (pb[0]-pa[0])*P1[1] + pb[0]*pa[1] - pb[1]*pa[0]) / ((pb[1]-pa[1])**2 + (pb[0]-pa[0])**2)**0.5
-    dist_L2 = abs((pd[1]-pc[1])*P1[0] - (pd[0]-pc[0])*P1[1] + pd[0]*pc[1] - pd[1]*pc[0]) / ((pd[1]-pc[1])**2 + (pd[0]-pc[0])**2)**0.5
-    
-    # Extend the lines infinitely
-    x = np.linspace(-10, 10, 100)
-    y1 = (pb[1]-pa[1])/(pb[0]-pa[0])*(x-pa[0])+pa[1]
-    y2 = (pd[1]-pc[1])/(pd[0]-pc[0])*(x-pc[0])+pc[1]
-
-    return dist_L1 > dist_L2
+    return {"ellipse": ellipse, "major_axis": major_axis, "minor_axis": minor_axis, "center": center, "density": density, "ratio": (major_length/minor_length), "axis": (distance_major < distance_minor), "angle": angle}
