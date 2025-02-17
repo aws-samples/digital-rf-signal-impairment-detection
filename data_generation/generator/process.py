@@ -78,5 +78,5 @@ def process_directory(root_dir: str):
     print("\nProcessing complete!")
 
 if __name__ == "__main__":
-    root_directory = '../data_generation/generator/data'
+    root_directory = './data'
     process_directory(root_directory)

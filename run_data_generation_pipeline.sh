@@ -20,7 +20,7 @@ docker run -it --rm -v $PWD/data_generation:/temp/data gnuradio-image bash -c "c
 
 # Step 3: Process the data
 echo "Processing data..."
-cd notebooks
+cd data_generation/generator
 python3 process.py
 
 # Return to original directory
