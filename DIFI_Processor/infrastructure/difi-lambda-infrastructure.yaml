@@ -25,7 +25,7 @@ Resources:
         ImageUri: !Ref ContainerImageURI
       Role: !GetAtt LambdaExecutionRole.Arn
       Timeout: 900
-      MemorySize: 3008
+      MemorySize: 1000
       Environment:
         Variables:
           RESULTS_BUCKET: !Ref ResultsBucketName

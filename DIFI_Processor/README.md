@@ -1,6 +1,6 @@
 # DIFI_Processor
 
-A containerized solution for processing Digital Intermediate Frequency Interoperability (DIFI) standard PCAP files stored in Amazon S3. This processor extracts signal packet payloads, converts them to I/Q CSV format, and generates constellation plots for analysis with Amazon Bedrock.
+A serverless AWS Lambda solution that processes Digital Intermediate Frequency Interoperability (DIFI) standard PCAP files from S3 and generates constellation plots for AI inference with Amazon Bedrock. This containerized Lambda function provides independent, scalable processing without impacting other compute resources.
 
 ## 🚧 Development Status
 
@@ -8,56 +8,76 @@ A containerized solution for processing Digital Intermediate Frequency Interoper
 
 ## Overview
 
-DIFI_Processor is designed to:
+DIFI_Processor enables AI-driven analysis of DIFI data through:
 
-- Download DIFI PCAP files from Amazon S3
-- Parse DIFI packets (context and data packets)
-- Extract complex I/Q samples from signal payloads
-- Convert samples to CSV format (I, Q columns)
-- Generate constellation diagrams and plots
-- Upload results back to S3 for Amazon Bedrock integration
+- **Serverless Processing**: AWS Lambda automatically processes PCAP files uploaded to S3
+- **Independent Compute**: Isolated processing that doesn't impact other system performance
+- **AI-Ready Outputs**: Generates constellation plots optimized for Amazon Bedrock inference
+- **Event-Driven**: Automatically triggered by S3 uploads for seamless workflow
+- **Scalable**: Lambda scales automatically based on processing demand
 
 ## Architecture
 
 ```
-S3 PCAP Files → DIFI_Processor Container → CSV Files + Plots → Amazon Bedrock
+S3 PCAP Upload → Lambda Trigger → Containerized Processing → Constellation Plots → Amazon Bedrock AI
 ```
+
+**Key Benefits:**
+
+- **Serverless Simplicity**: No infrastructure management required
+- **Cost Effective**: Pay only for processing time used
+- **Performance Isolation**: Independent processing preserves system resources
+- **AI Integration**: Direct pipeline to Amazon Bedrock for intelligent analysis
 
 ## Features
 
-- **DIFI Standard Compliance**: Supports DIFI standard flow signal packets
-- **S3 Integration**: Direct download/upload from Amazon S3
-- **Flexible Processing**: Configurable packet limits and sampling rates
-- **Multiple Output Formats**: CSV files and PNG constellation plots
-- **Containerized**: Docker-based deployment for scalability
-- **Bedrock Ready**: Outputs formatted for Amazon Bedrock analysis
+- **Serverless Lambda**: Event-driven processing with automatic scaling
+- **AI-Focused**: Optimized constellation plots for Amazon Bedrock inference
+- **Performance Isolation**: Independent processing preserves main system resources
+- **DIFI Compliance**: Full support for DIFI standard signal packets
+- **Automated Pipeline**: S3 upload triggers immediate processing
+- **Container-Based**: Consistent execution environment across deployments
 
 ## Quick Start
 
-### Using Docker
+### Deploy to AWS
+
+**Prerequisites:**
+
+1. Set your AWS region: `export AWS_DEFAULT_REGION=us-east-1`
+2. Create S3 buckets:
+   ```bash
+   aws s3 mb s3://your-project-raw
+   aws s3 mb s3://your-project-results
+   ```
+3. Update bucket names in `scripts/deploy.sh`:
+   ```bash
+   PCAP_BUCKET_NAME="your-project-raw"
+   RESULTS_BUCKET_NAME="your-project-results"
+   ```
+
+**Deploy:**
 
 ```bash
-# Build the container
-docker build -f docker/Dockerfile.extract -t difi-extract .
+# Navigate to DIFI_Processor directory
+cd DIFI_Processor
 
-# Extract payload from S3 PCAP (set your region)
-docker run \
-  -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
-  -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
-  -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
-  -e AWS_DEFAULT_REGION=us-east-1 \
-  -v $(pwd)/output:/app/output \
-  difi-extract python s3_extract_payload.py <bucket-name> <pcap-file> --max-packets 1000
+# Build and push container to ECR
+./scripts/build_and_push.sh
 
-# Generate constellation plots
-docker run \
-  -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
-  -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
-  -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
-  -e AWS_DEFAULT_REGION=us-east-1 \
-  -v $(pwd)/output:/app/output \
-  difi-extract python s3_plot_csv.py <bucket-name> results/constellation.png --directory /app/output
+# Deploy Lambda infrastructure
+./scripts/deploy.sh
 ```
+
+This will:
+
+1. Build the Docker container and push to Amazon ECR
+2. Deploy a Lambda function that automatically processes PCAP files uploaded to S3
+3. Generate constellation plots and save them to the results bucket
+
+### Local Processing (Alternative)
+
+For local development and testing, you can run the code natively.
 
 ### Local Development
 
@@ -85,50 +105,15 @@ python plot_random_csv.py --output constellation.png --num-plots 20
 - `plot_random_csv.py` - Constellation diagram generation
 - `s3_plot_csv.py` - S3-enabled plot generation and upload
 
-### Container
+## Amazon Bedrock AI Integration
 
-- `docker/Dockerfile.extract` - Production container definition
+This solution creates an automated pipeline for AI analysis of DIFI data:
 
-## Usage Examples
-
-### Extract I/Q Data from S3 PCAP
-
-```bash
-python s3_extract_payload.py <bucket-name> <pcap-file> --prefix signal_001 --max-packets 500
-```
-
-Output: `output/signal_001_000.csv`, `output/signal_001_001.csv`, etc.
-
-### Generate Constellation Plots
-
-```bash
-python s3_plot_csv.py <bucket-name> plots/constellation.png --directory ./output --num-plots 25
-```
-
-### CSV Format
-
-TBD
-
-## Configuration
-
-### Environment Variables
-
-- `AWS_REGION` - AWS region for S3 operations
-- `AWS_PROFILE` - AWS profile for authentication
-
-### Processing Parameters
-
-- `--max-packets` - Limit number of packets processed
-- `--every-nth` - Sample every nth data point for plots
-- `--num-plots` - Number of constellation plots to generate
-- `--aggregate` - Files to aggregate per plot
-
-## Amazon Bedrock Integration
-
-Generated plots are formatted for direct ingestion into Amazon Bedrock workflows:
-
-- PNG constellation plots for Gen AI Inference
-- S3-based data pipeline integration
+- **Constellation Plots**: Generated specifically for visual AI inference
+- **Automated Workflow**: S3 → Lambda → Bedrock pipeline
+- **AI Insights**: Apply generative AI insights to signal analysis without training of machine learning models
+- **Performance Benefits**: Independent Lambda processing preserves main system resources
+- **Scalable Analysis**: Process multiple PCAP files simultaneously
 
 ## Development
 
@@ -147,17 +132,17 @@ DIFI_Processor/
 │   ├── difi_context_packet_class.py
 │   └── ...
 └── docker/
-    └── Dockerfile.extract  # Container definition
+    └── Dockerfile.lambda  # Container definition
 ```
 
 ### Contributing
 
-This project is in active development. Current focus areas:
+This project focuses on serverless AI-driven DIFI analysis. Current development areas:
 
-- Enhanced DIFI standard compliance
-- Performance optimization for large PCAP files
-- Additional visualization options
-- Bedrock integration improvements
+- Enhanced Amazon Bedrock integration patterns
+- Optimized constellation plot generation for AI inference
+- Advanced Lambda performance tuning
+- Additional AI-ready visualization formats
 
 ## Requirements
 
