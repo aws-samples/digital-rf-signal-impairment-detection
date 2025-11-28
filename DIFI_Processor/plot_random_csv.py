@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def plot_random_csv_constellations(directory=".", output_file="random_constellations.png", every_nth=1, num_plots=20, aggregate=1):
-    """Create subplot of random constellation diagrams from CSV files"""
+    """Create individual constellation diagram files from CSV files"""
     
     # Find all packet_*.csv files
     csv_pattern = os.path.join(directory, "packet_*.csv")
@@ -42,21 +42,13 @@ def plot_random_csv_constellations(directory=".", output_file="random_constellat
     
     print(f"Found {len(csv_files)} CSV files, plotting {num_plots} random ones")
     
-    # Create subplot grid
-    cols = 5
-    rows = (num_plots + cols - 1) // cols
-    fig, axes = plt.subplots(rows, cols, figsize=(15, 3*rows))
+    # Generate base filename without extension
+    base_name = os.path.splitext(output_file)[0]
+    extension = os.path.splitext(output_file)[1] or '.png'
     
-    # Handle single row case
-    if rows == 1:
-        axes = axes.reshape(1, -1)
-    fig.suptitle(f'Random Constellation Diagrams from CSV Files', fontsize=16)
+    output_files = []
     
     for i, file_group in enumerate(file_groups):
-        row = i // cols
-        col = i % cols
-        ax = axes[row, col]
-        
         try:
             # Aggregate samples from multiple CSV files
             all_i_samples = []
@@ -85,34 +77,29 @@ def plot_random_csv_constellations(directory=".", output_file="random_constellat
                 all_i_samples = all_i_samples[indices]
                 all_q_samples = all_q_samples[indices]
             
-            # Plot constellation
+            # Create individual plot
+            fig, ax = plt.subplots(figsize=(6, 6))
             ax.scatter(all_i_samples, all_q_samples, alpha=0.6, s=0.5)
+            ax.grid(True, alpha=0.3)
+            ax.set_aspect('equal')
+            ax.tick_params(axis='both', which='major', labelsize=8)
+            ax.locator_params(nbins=5)
             
-            # Create title showing aggregated packets
+            # Generate output filename
             if len(packet_nums) == 1:
-                title = f'Packet {packet_nums[0]}'
+                plot_filename = f"{base_name}_packet_{packet_nums[0]}{extension}"
             else:
-                title = f'Packets {packet_nums[0]}-{packet_nums[-1]} ({len(packet_nums)} files)'
-            ax.set_title(title, fontsize=8)
+                plot_filename = f"{base_name}_packets_{packet_nums[0]}-{packet_nums[-1]}{extension}"
+            
+            plt.savefig(plot_filename, dpi=150, bbox_inches='tight')
+            plt.close()
+            output_files.append(plot_filename)
             
         except Exception as e:
-            ax.text(0.5, 0.5, f'Error loading\nfiles', 
-                   ha='center', va='center', transform=ax.transAxes)
-        
-        ax.grid(True, alpha=0.3)
-        ax.set_aspect('equal')
-        ax.set_xticks([])
-        ax.set_yticks([])
+            print(f"Error processing file group {i}: {e}")
     
-    # Hide empty subplots
-    for i in range(num_plots, rows * cols):
-        row = i // cols
-        col = i % cols
-        axes[row, col].set_visible(False)
-    
-    plt.tight_layout()
-    plt.savefig(output_file, dpi=150, bbox_inches='tight')
-    print(f"Random constellation overview saved to {output_file}")
+    print(f"Generated {len(output_files)} constellation plots")
+    return output_files
 
 if __name__ == "__main__":
     import argparse

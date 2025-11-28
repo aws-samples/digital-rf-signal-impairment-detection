@@ -74,7 +74,7 @@ def extract_payload_from_pcap(pcap_file, output_prefix="packet", max_packets=Non
                             
                         samples = extract_payload_from_bytes(payload_data, context_packet)
                         if samples is not None:
-                            output_file = f"./output/{output_prefix}_{data_packet_count:03d}.csv"
+                            output_file = f"{output_prefix}_{data_packet_count:03d}.csv"
                             np.savetxt(output_file, np.column_stack([samples.real, samples.imag]), 
                                      delimiter=',', fmt='%.6f')
                             print(f"Saved {len(samples)} samples to {output_file}")
