@@ -64,7 +64,7 @@ S3 PCAP Upload → Lambda Trigger → Containerized Processing → Constellation
 cd DIFI_Processor
 
 # Build and push container to ECR
-./scripts/build_and_push.sh
+./scripts/build-and-push.sh
 
 # Deploy Lambda infrastructure
 ./scripts/deploy.sh
