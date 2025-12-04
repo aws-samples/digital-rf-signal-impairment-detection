@@ -55,6 +55,7 @@ S3 PCAP Upload → Lambda Trigger → Containerized Processing → Constellation
    PCAP_BUCKET_NAME="your-project-raw"
    RESULTS_BUCKET_NAME="your-project-results"
    ```
+   Also update the AWS `REGION` to your desired region.
 
 **Deploy:**
 
