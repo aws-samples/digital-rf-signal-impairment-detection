@@ -1,0 +1,208 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Bedrock Agent with Lambda Action Group and Knowledge Base for IQ Constellation Analysis'
+
+Parameters:
+  S3BucketName:
+    Type: String
+    Description: 'S3 bucket containing Lambda code and image detection assets'
+    Default: 'satcom-iq-constellation-demo'
+  
+  LambdaS3Key:
+    Type: String
+    Description: 'S3 key for the Lambda deployment package'
+    Default: 'lambda/iq-constellation-inference-demo-fxn.zip'
+  
+  ModelImageId:
+    Type: String
+    Description: 'Bedrock model ID for image analysis and agent foundation model'
+    Default: 'us.anthropic.claude-sonnet-4-5-20250929-v1:0'
+
+Resources:
+  # Lambda Execution Role
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'iq-constellation-lambda-${AWS::StackName}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: BedrockS3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                  - bedrock:InvokeModelWithResponseStream
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: '*'
+
+  # Lambda Function
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: iq-constellation-inference-demo-fxn
+      Runtime: python3.13
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 120
+      MemorySize: 512
+      Environment:
+        Variables:
+          model_image_id: !Ref ModelImageId
+      Code:
+        S3Bucket: !Ref S3BucketName
+        S3Key: !Ref LambdaS3Key
+
+  # Agent Role
+  AgentRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'bedrock-agent-${AWS::StackName}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: bedrock.amazonaws.com
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                'aws:SourceAccount': !Ref AWS::AccountId
+              ArnLike:
+                'aws:SourceArn': !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:agent/*'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonBedrockLimitedAccess
+      Policies:
+        - PolicyName: BedrockModelAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                  - bedrock:InvokeModelWithResponseStream
+                  - bedrock:GetInferenceProfile
+                  - bedrock:GetFoundationModel
+                Resource:
+                  - !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelImageId}'
+        - PolicyName: KnowledgeBaseAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - bedrock:Retrieve
+                  - bedrock:RetrieveAndGenerate
+                Resource: !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:knowledge-base/*'
+
+  # Bedrock Agent (without Knowledge Base initially)
+  BedrockAgent:
+    Type: AWS::Bedrock::Agent
+    Properties:
+      AgentName: !Sub 'iq-constellation-${AWS::StackName}'
+      AgentResourceRoleArn: !GetAtt AgentRole.Arn
+      FoundationModel: !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelImageId}'
+      Instruction: |
+        You are an expert RF Analyst specializing in IQ constellation modulation diagrams. 
+        
+        Your task is to analyze constellation diagrams and identify:
+        1. The modulation type (e.g., QPSK, 16-QAM, 64-QAM, etc.)
+        2. Any noise or impairments present
+        3. Classification of noise/imbalance as "phase noise" or "interference"
+        4. Typical causes of the identified issues
+        5. Imparement severity if present (Mild/moderate/severe)
+        6. Quick recommendation (acceptable/needs attention/critical)
+        
+        Do not respond in markup, respond in plain text
+      IdleSessionTTLInSeconds: 600
+      ActionGroups:
+        - ActionGroupName: image-analysis-action-group
+          ActionGroupState: ENABLED
+          ActionGroupExecutor:
+            Lambda: !GetAtt LambdaFunction.Arn
+          ApiSchema:
+            Payload: |
+              openapi: 3.0.0
+              info:
+                title: imageAnalysisAPI
+                version: 1.0.0
+                description: APIs for getting IQ interference analysis from images
+              paths:
+                /analyze_image:
+                  post:
+                    summary: Analyze an image from an S3 bucket and extract text.
+                    description: Determines interference type
+                    operationId: analyzeImageFromS3
+                    requestBody:
+                      required: true
+                      content:
+                        application/json:
+                          schema:
+                            type: object
+                            properties:
+                              bucket_name:
+                                type: string
+                                description: The name of the S3 bucket where the image is located.
+                              image_key:
+                                type: string
+                                description: The key (path) of the image within the S3 bucket.
+                    responses:
+                      '200':
+                        description: Successfully analyzed the image and extracted text.
+                        content:
+                          application/json:
+                            schema:
+                              type: object
+                              properties:
+                                extracted_text:
+                                  type: string
+                                  description: The text extracted from the image.
+
+  # Lambda Permission for Bedrock Agent
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt LambdaFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: bedrock.amazonaws.com
+      SourceArn: !GetAtt BedrockAgent.AgentArn
+
+  # Agent Alias
+  AgentAlias:
+    Type: AWS::Bedrock::AgentAlias
+    Properties:
+      AgentId: !Ref BedrockAgent
+      AgentAliasName: production
+      Description: 'Production alias for IQ constellation agent'
+
+Outputs:
+  AgentId:
+    Description: 'Bedrock Agent ID'
+    Value: !Ref BedrockAgent
+  
+  AgentAliasId:
+    Description: 'Bedrock Agent Alias ID'
+    Value: !GetAtt AgentAlias.AgentAliasId
+  
+  S3BucketName:
+    Description: 'S3 Bucket Name'
+    Value: !Ref S3BucketName
+  
+  LambdaFunctionArn:
+    Description: 'Lambda Function ARN'
+    Value: !GetAtt LambdaFunction.Arn
+  
+  NextSteps:
+    Description: 'Next steps to add Knowledge Base'
+    Value: 'Create Knowledge Base manually in console or use the AWS CLI, then update the agent to reference it'

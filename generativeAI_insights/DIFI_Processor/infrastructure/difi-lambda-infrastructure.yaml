@@ -1,0 +1,122 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "DIFI Processor - Lambda container infrastructure for processing PCAP files from S3"
+
+Parameters:
+  ContainerImageURI:
+    Type: String
+    Description: "ECR URI for the DIFI processor container (e.g., 123456789012.dkr.ecr.us-east-1.amazonaws.com/difi-processor:latest)"
+
+  PcapBucketName:
+    Type: String
+    Description: "Name of existing S3 bucket for PCAP files"
+
+  ResultsBucketName:
+    Type: String
+    Description: "Name of existing S3 bucket for processing results"
+
+Resources:
+  # Lambda Function
+  ProcessorFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-difi-processor"
+      PackageType: Image
+      Code:
+        ImageUri: !Ref ContainerImageURI
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 900
+      MemorySize: 1000
+      Environment:
+        Variables:
+          RESULTS_BUCKET: !Ref ResultsBucketName
+          MAX_PACKETS: "1000"
+          OUTPUT_PREFIX: "packet"
+          NUM_PLOTS: "1"
+          EVERY_NTH: "2"
+          AGGREGATE: "3"
+      LoggingConfig:
+        LogGroup: !Ref LogGroup
+
+  # IAM Role for Lambda
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub "arn:aws:s3:::${PcapBucketName}/*"
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource: !Sub "arn:aws:s3:::${ResultsBucketName}/*"
+
+  # CloudWatch Log Group
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}-difi-processor"
+      RetentionInDays: 7
+
+Outputs:
+  LambdaFunctionName:
+    Description: "Lambda function name"
+    Value: !Ref ProcessorFunction
+    Export:
+      Name: !Sub "${AWS::StackName}-LambdaFunction"
+
+  TestEvent:
+    Description: "Sample S3 PUT test event JSON"
+    Value: !Sub |
+      {
+        "Records": [
+          {
+            "eventVersion": "2.0",
+            "eventSource": "aws:s3",
+            "awsRegion": "us-east-1",
+            "eventTime": "1970-01-01T00:00:00.000Z",
+            "eventName": "ObjectCreated:Put",
+            "userIdentity": {
+              "principalId": "EXAMPLE"
+            },
+            "requestParameters": {
+              "sourceIPAddress": "127.0.0.1"
+            },
+            "responseElements": {
+              "x-amz-request-id": "EXAMPLE123456789",
+              "x-amz-id-2": "EXAMPLE123/5678abcdefghijklambdaisawesome/mnopqrstuvwxyzABCDEFGH"
+            },
+            "s3": {
+              "s3SchemaVersion": "1.0",
+              "configurationId": "testConfigRule",
+              "bucket": {
+                "name": "${PcapBucketName}",
+                "ownerIdentity": {
+                  "principalId": "EXAMPLE"
+                },
+                "arn": "arn:aws:s3:::${PcapBucketName}"
+              },
+              "object": {
+                "key": "test-file.pcap",
+                "size": 1024,
+                "eTag": "0123456789abcdef0123456789abcdef",
+                "sequencer": "0A1B2C3D4E5F678901"
+              }
+            }
+          }
+        ]
+      }
