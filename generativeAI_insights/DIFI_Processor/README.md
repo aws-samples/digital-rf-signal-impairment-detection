@@ -78,7 +78,7 @@ This will:
 **Add a Lambda trigger:**
 
 Attach a trigger to invoke the Lambda function when a new pcap is added to the source (raw) S3 bucket: -
-<img width="500" alt="Screenshot 2025-12-05 101538" src="https://github.com/user-attachments/assets/5faf8d04-d89c-441b-8657-1a5bbb9b0e2c" />
+<img width="800" alt="Screenshot 2025-12-05 101538" src="https://github.com/user-attachments/assets/5faf8d04-d89c-441b-8657-1a5bbb9b0e2c" />
 
 **Test:**
 
