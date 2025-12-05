@@ -75,6 +75,11 @@ This will:
 2. Deploy a Lambda function that automatically processes PCAP files uploaded to S3
 3. Generate constellation plots and save them to the results bucket
 
+**Add a Lambda trigger:**
+Attach a trigger to invoke the Lambda function when a new pcap is added to the source S3 bucket: -
+<img width="1046" height="670" alt="Screenshot 2025-12-05 101538" src="https://github.com/user-attachments/assets/5faf8d04-d89c-441b-8657-1a5bbb9b0e2c" />
+
+
 ### Local Processing (Alternative)
 
 For local development and testing, you can run the code natively.
