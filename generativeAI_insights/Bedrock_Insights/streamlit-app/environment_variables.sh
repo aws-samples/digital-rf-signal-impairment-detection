@@ -5,7 +5,7 @@ export BEDROCK_AGENT_ID="<YOUR-AGENT-ID>" # Update with your Agent ID
 export BEDROCK_AGENT_ALIAS_ID="<YOUR-AGENT-ALIAS-ID>" # Update with your Agent Alias ID
 
 
-export AWS_DEFAULT_REGION="us-west-2"
+export AWS_DEFAULT_REGION="us-east-1"
 
 # The favicon, such as `:bar_chart:`. The default Streamlit icon will be used if it is not set.
 #export BEDROCK_AGENT_TEST_UI_ICON="satcom-ant-img-512.jpg"

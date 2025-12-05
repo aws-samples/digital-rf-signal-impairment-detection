@@ -1,30 +1,30 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Bedrock Agent with Lambda Action Group and Knowledge Base for IQ Constellation Analysis'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Bedrock Agent with Lambda Action Group and Knowledge Base for IQ Constellation Analysis"
 
 Parameters:
   S3BucketName:
     Type: String
-    Description: 'S3 bucket containing Lambda code and image detection assets'
-    Default: 'satcom-iq-constellation-demo'
-  
+    Description: "S3 bucket containing Lambda code and image detection assets"
+    Default: "pcap-test-results"
+
   LambdaS3Key:
     Type: String
-    Description: 'S3 key for the Lambda deployment package'
-    Default: 'lambda/iq-constellation-inference-demo-fxn.zip'
-  
+    Description: "S3 key for the Lambda deployment package"
+    Default: "lambda/iq-constellation-inference-demo-fxn.zip"
+
   ModelImageId:
     Type: String
-    Description: 'Bedrock model ID for image analysis and agent foundation model'
-    Default: 'us.anthropic.claude-sonnet-4-5-20250929-v1:0'
+    Description: "Bedrock model ID for image analysis and agent foundation model"
+    Default: "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
 Resources:
   # Lambda Execution Role
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub 'iq-constellation-lambda-${AWS::StackName}'
+      RoleName: !Sub "iq-constellation-lambda-${AWS::StackName}"
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -35,17 +35,17 @@ Resources:
       Policies:
         - PolicyName: BedrockS3Access
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
                   - bedrock:InvokeModel
                   - bedrock:InvokeModelWithResponseStream
-                Resource: '*'
+                Resource: "*"
               - Effect: Allow
                 Action:
                   - s3:GetObject
-                Resource: '*'
+                Resource: "*"
 
   # Lambda Function
   LambdaFunction:
@@ -68,9 +68,9 @@ Resources:
   AgentRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub 'bedrock-agent-${AWS::StackName}'
+      RoleName: !Sub "bedrock-agent-${AWS::StackName}"
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -78,15 +78,15 @@ Resources:
             Action: sts:AssumeRole
             Condition:
               StringEquals:
-                'aws:SourceAccount': !Ref AWS::AccountId
+                "aws:SourceAccount": !Ref AWS::AccountId
               ArnLike:
-                'aws:SourceArn': !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:agent/*'
+                "aws:SourceArn": !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:agent/*"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonBedrockLimitedAccess
       Policies:
         - PolicyName: BedrockModelAccess
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
@@ -95,27 +95,28 @@ Resources:
                   - bedrock:GetInferenceProfile
                   - bedrock:GetFoundationModel
                 Resource:
-                  - !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelImageId}'
+                  - !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelImageId}"
         - PolicyName: KnowledgeBaseAccess
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
                   - bedrock:Retrieve
                   - bedrock:RetrieveAndGenerate
-                Resource: !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:knowledge-base/*'
+                Resource: !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:knowledge-base/*"
 
   # Bedrock Agent (without Knowledge Base initially)
   BedrockAgent:
     Type: AWS::Bedrock::Agent
     Properties:
-      AgentName: !Sub 'iq-constellation-${AWS::StackName}'
+      AgentName: !Sub "iq-constellation-${AWS::StackName}"
       AgentResourceRoleArn: !GetAtt AgentRole.Arn
-      FoundationModel: !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelImageId}'
+      FoundationModel: !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelImageId}"
+      Description: "Agent which detects impairments in IQ constellation images"
       Instruction: |
         You are an expert RF Analyst specializing in IQ constellation modulation diagrams. 
-        
+
         Your task is to analyze constellation diagrams and identify:
         1. The modulation type (e.g., QPSK, 16-QAM, 64-QAM, etc.)
         2. Any noise or impairments present
@@ -123,7 +124,7 @@ Resources:
         4. Typical causes of the identified issues
         5. Imparement severity if present (Mild/moderate/severe)
         6. Quick recommendation (acceptable/needs attention/critical)
-        
+
         Do not respond in markup, respond in plain text
       IdleSessionTTLInSeconds: 600
       ActionGroups:
@@ -184,25 +185,25 @@ Resources:
     Properties:
       AgentId: !Ref BedrockAgent
       AgentAliasName: production
-      Description: 'Production alias for IQ constellation agent'
+      Description: "Production alias for IQ constellation agent"
 
 Outputs:
   AgentId:
-    Description: 'Bedrock Agent ID'
+    Description: "Bedrock Agent ID"
     Value: !Ref BedrockAgent
-  
+
   AgentAliasId:
-    Description: 'Bedrock Agent Alias ID'
+    Description: "Bedrock Agent Alias ID"
     Value: !GetAtt AgentAlias.AgentAliasId
-  
+
   S3BucketName:
-    Description: 'S3 Bucket Name'
+    Description: "S3 Bucket Name"
     Value: !Ref S3BucketName
-  
+
   LambdaFunctionArn:
-    Description: 'Lambda Function ARN'
+    Description: "Lambda Function ARN"
     Value: !GetAtt LambdaFunction.Arn
-  
+
   NextSteps:
-    Description: 'Next steps to add Knowledge Base'
-    Value: 'Create Knowledge Base manually in console or use the AWS CLI, then update the agent to reference it'
+    Description: "Next steps to add Knowledge Base"
+    Value: "Create Knowledge Base manually in console or use the AWS CLI, then update the agent to reference it"

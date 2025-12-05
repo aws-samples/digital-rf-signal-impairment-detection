@@ -7,7 +7,7 @@ import os
 import uuid
 
 # Troubleshooting Tip: If you encounter a GetObject error, update the S3 bucket name
-# on line 114 to match your actual bucket (e.g., "satcom-iq-constellation-demo")
+# on line 118 to match your actual bucket (e.g., "pcap-test-results")
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -54,9 +54,9 @@ def interpret_IQ_image(bucket, prefix=""):
                 image_objects = [obj for obj in response['Contents']
                                 if obj['Key'].lower().endswith(image_extensions)]
                 
-                # Sort by LastModified timestamp (newest first) and get latest 15
+                # Sort by LastModified timestamp (newest first) and get latest 50
                 image_objects.sort(key=lambda x: x['LastModified'], reverse=True)
-                image_files = [obj['Key'] for obj in image_objects[:15]]
+                image_files = [obj['Key'] for obj in image_objects[:50]]
 
                 if image_files:
                     selected_file = st.selectbox("Select an image file:", image_files)
@@ -115,4 +115,4 @@ if __name__ == '__main__':
         if st.button("Reset Session"):
             init_session_state()
 
-    interpret_IQ_image("satcom-iq-constellation-demo-4231", "iq-constellation-plots-qpsk/")
+    interpret_IQ_image("<YOUR-BUCKET-NAME>", "results/test-file/")

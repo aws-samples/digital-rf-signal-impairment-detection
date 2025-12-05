@@ -18,7 +18,7 @@ The solution consists of:
 - Python 3.9+ (for Streamlit app)
 - Access to Claude Sonnet 4.5 model in your AWS region
 
-**Note**: Some of the assets may not be available in all regions. This stack was tested in **us-west-2**.
+**Note**: Some of the assets may not be available in all regions. This stack was tested in **us-east-1** and **us-west-2**.
 
 ## Deployment Steps
 
@@ -26,10 +26,9 @@ The solution consists of:
 
 **Important**: Complete this step before deploying the CloudFormation stack.
 
-1. **Create S3 bucket** (choose a globally unique name or use the default):
+1. **Set bucket name** (reference your existing DIFI Processor Results bucket):
 ```bash
-BUCKET_NAME=satcom-iq-constellation-demo
-aws s3 mb s3://${BUCKET_NAME} --region us-west-2
+BUCKET_NAME=your-difi-processor-results-bucket-name
 ```
 
 2. **Create Lambda deployment package**:
@@ -76,7 +75,7 @@ aws cloudformation create-stack \
   --template-body file://bedrock-constellation-analysis.yaml \
   --parameters ParameterKey=S3BucketName,ParameterValue=${BUCKET_NAME} \
   --capabilities CAPABILITY_NAMED_IAM \
-  --region us-west-2
+  --region us-east-1
 ```
 
 2. Get the stack outputs:
@@ -84,7 +83,7 @@ aws cloudformation create-stack \
 aws cloudformation describe-stacks \
   --stack-name iq-constellation-analysis \
   --query 'Stacks[0].Outputs' \
-  --region us-west-2
+  --region us-east-1
 ```
 
 Note the following output values:
@@ -117,7 +116,7 @@ The Knowledge Base must be created manually as it requires specific configuratio
    - Select **Default chunking**
    - Click **Next**
 
-4. **Create Embedings**
+4. **Create Embeddings**
    - Select Embedding model: `Titan Text Embeddings V2` (or your preferred model)
    - Select **Quick create new vector store**
    - Select **Amazon OpenSearch Serverless** as vector store
@@ -188,7 +187,7 @@ The agent needs permission to access the Knowledge Base. Add an inline policy:
            "bedrock:Retrieve",
            "bedrock:RetrieveAndGenerate"
          ],
-         "Resource": "arn:aws:bedrock:us-west-2:YOUR_ACCOUNT_ID:knowledge-base/YOUR_KB_ID"
+         "Resource": "arn:aws:bedrock:us-east-1:YOUR_ACCOUNT_ID:knowledge-base/YOUR_KB_ID"
        }
      ]
    }
@@ -206,7 +205,7 @@ Alternatively, add via CLI:
 AGENT_ROLE_NAME="bedrock-agent-iq-constellation-analysis"
 KB_ID="YOUR_KB_ID"
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-REGION="us-west-2"
+REGION="us-east-1"
 
 # Create policy document
 cat > kb-policy.json << EOF
@@ -278,10 +277,10 @@ source environment_variables.sh
 
 Edit `s3_iq_image_detection_ui.py` and update line 117 with your bucket name and S3 prefix for test images:
 ```python
-interpret_IQ_image("${BUCKET_NAME}", "iq-constellation-plots-qpsk/")
+interpret_IQ_image("<YOUR-BUCKET-NAME>", "results/test-file/")
 ```
 
-- Replace the first parameter with your actual bucket name (e.g., `satcom-iq-constellation-demo`)
+- Replace the first parameter with your actual bucket name (e.g., `pcap-test-results`)
 - The second parameter is the S3 prefix/folder containing your test images (e.g., `iq-constellation-plots-qpsk/` or `iq-constellation-plots-8psk/`)
 
 4. **Run Streamlit**
@@ -359,7 +358,7 @@ To remove all resources:
 
 ```bash
 # Delete CloudFormation stack
-aws cloudformation delete-stack --stack-name iq-constellation-analysis --region us-west-2
+aws cloudformation delete-stack --stack-name iq-constellation-analysis --region us-east-1
 
 # Manually delete Knowledge Base (not in stack)
 # Go to Bedrock Console → Knowledge bases → Delete
