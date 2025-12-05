@@ -76,9 +76,17 @@ This will:
 3. Generate constellation plots and save them to the results bucket
 
 **Add a Lambda trigger:**
-Attach a trigger to invoke the Lambda function when a new pcap is added to the source S3 bucket: -
+
+Attach a trigger to invoke the Lambda function when a new pcap is added to the source (raw) S3 bucket: -
 <img width="1046" height="670" alt="Screenshot 2025-12-05 101538" src="https://github.com/user-attachments/assets/5faf8d04-d89c-441b-8657-1a5bbb9b0e2c" />
 
+**Test:**
+
+Upload a pcap file to your source bucket either programmatically or via the AWS console. 
+
+Validate that the Lambda has been invoked by clicking on the Lambda function `Monitor` tab. You should see the invocations count increase each time a new pcap is uploaded.
+
+Navigate to S3 in the console. You should see 1 or more IQ constellation png files in the `RESULTS_BUCKET_NAME` -> `results` folder
 
 ### Local Processing (Alternative)
 
