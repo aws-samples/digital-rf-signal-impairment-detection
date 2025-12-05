@@ -46,21 +46,21 @@ S3 PCAP Upload → Lambda Trigger → Containerized Processing → Constellation
 
 1. Set your AWS region: `export AWS_DEFAULT_REGION=us-east-1`
 2. Create S3 buckets:
+
    ```bash
-   aws s3 mb s3://your-project-raw
-   aws s3 mb s3://your-project-results
+   export DIFI_RAW_BUCKET="difi-raw-bucket-name"
+   export DIFI_RESULTS_BUCKET="difi-results-bucket-name"
+
+   aws s3 mb s3://${DIFI_RAW_BUCKET}
+   aws s3 mb s3://${DIFI_RESULTS_BUCKET}
    ```
-3. Update bucket names in `scripts/deploy.sh`:
-   ```bash
-   PCAP_BUCKET_NAME="your-project-raw"
-   RESULTS_BUCKET_NAME="your-project-results"
-   ```
-   
+
 **Deploy:**
 
 ```bash
 # Navigate to DIFI_Processor directory
 cd DIFI_Processor
+chmod +x scripts/build-and-push.sh scripts/deploy.sh
 
 # Build and push container to ECR
 ./scripts/build-and-push.sh
@@ -75,6 +75,8 @@ This will:
 2. Deploy a Lambda function that automatically processes PCAP files uploaded to S3
 3. Generate constellation plots and save them to the results bucket
 
+Monitor the status of the deployment on the Cloudformation service page. After the deployment is complete, stack infrastructure will be listed there.
+
 **Add a Lambda trigger:**
 
 Attach a trigger to invoke the Lambda function when a new pcap is added to the source (raw) S3 bucket: -
@@ -82,7 +84,7 @@ Attach a trigger to invoke the Lambda function when a new pcap is added to the s
 
 **Test:**
 
-Upload a pcap file to your source bucket either programmatically or via the AWS console. 
+Upload a pcap file to your source bucket either programmatically or via the AWS console.
 
 Validate that the Lambda has been invoked by clicking on the Lambda function `Monitor` tab. You should see the invocations count increase each time a new pcap is uploaded.
 

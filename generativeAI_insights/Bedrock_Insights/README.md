@@ -5,6 +5,7 @@ This project uses Amazon Bedrock Agents with multimodal LLMs to analyze IQ const
 ## Architecture Overview
 
 The solution consists of:
+
 - **Amazon Bedrock Agent**: Orchestrates the analysis workflow
 - **AWS Lambda**: Performs image analysis using Claude Sonnet 4.5 with few-shot prompting
 - **Amazon Bedrock Knowledge Base**: Provides reference documentation for RF impairment analysis
@@ -27,41 +28,48 @@ The solution consists of:
 **Important**: Complete this step before deploying the CloudFormation stack.
 
 1. **Set bucket name** (reference your existing DIFI Processor Results bucket):
+
 ```bash
-BUCKET_NAME=your-difi-processor-results-bucket-name
+DIFI_RESULTS_BUCKET=your-difi-processor-results-bucket-name
 ```
 
 2. **Create Lambda deployment package**:
+
 ```bash
 # Zip the Lambda function
 zip iq-constellation-inference-demo-fxn.zip lambda_function.py
 ```
 
 3. **Upload Lambda code to S3**:
+
 ```bash
 # Create lambda folder and upload the zip
-aws s3 cp iq-constellation-inference-demo-fxn.zip s3://${BUCKET_NAME}/lambda/iq-constellation-inference-demo-fxn.zip
+aws s3 cp iq-constellation-inference-demo-fxn.zip s3://${DIFI_RESULTS_BUCKET}/lambda/iq-constellation-inference-demo-fxn.zip
 ```
 
 4. **Upload few-shot training examples**:
+
 ```bash
-aws s3 cp iq-constellation-fewshot-data/ s3://${BUCKET_NAME}/iq-constellation-fewshot-data/ --recursive
+aws s3 cp iq-constellation-fewshot-data/ s3://${DIFI_RESULTS_BUCKET}/iq-constellation-fewshot-data/ --recursive
 ```
 
 5. **Upload knowledge base documents**:
+
 ```bash
-aws s3 cp iq-constellation-kb-data/ s3://${BUCKET_NAME}/iq-constellation-kb-data/ --recursive
+aws s3 cp iq-constellation-kb-data/ s3://${DIFI_RESULTS_BUCKET}/iq-constellation-kb-data/ --recursive
 ```
 
 6. **Upload test constellation images**:
+
 ```bash
-aws s3 cp iq-constellation-plots-qpsk/ s3://${BUCKET_NAME}/iq-constellation-plots-qpsk/ --recursive
-aws s3 cp iq-constellation-plots-8psk/ s3://${BUCKET_NAME}/iq-constellation-plots-8psk/ --recursive
+aws s3 cp iq-constellation-plots-qpsk/ s3://${DIFI_RESULTS_BUCKET}/iq-constellation-plots-qpsk/ --recursive
+aws s3 cp iq-constellation-plots-8psk/ s3://${DIFI_RESULTS_BUCKET}/iq-constellation-plots-8psk/ --recursive
 ```
 
 7. **Verify uploads**:
+
 ```bash
-aws s3 ls s3://${BUCKET_NAME}/ --recursive
+aws s3 ls s3://${DIFI_RESULTS_BUCKET}/ --recursive
 ```
 
 ### Step 2: Deploy CloudFormation Stack
@@ -69,16 +77,18 @@ aws s3 ls s3://${BUCKET_NAME}/ --recursive
 **Why?** CloudFormation automates the creation of IAM roles, Lambda functions, Bedrock Agent, and their interconnections as infrastructure-as-code. This ensures consistent, repeatable deployments and eliminates manual configuration errors that could occur when creating these resources individually through the console.
 
 1. Deploy the CloudFormation template:
+
 ```bash
 aws cloudformation create-stack \
   --stack-name iq-constellation-analysis \
   --template-body file://bedrock-constellation-analysis.yaml \
-  --parameters ParameterKey=S3BucketName,ParameterValue=${BUCKET_NAME} \
+  --parameters ParameterKey=S3BucketName,ParameterValue=${DIFI_RESULTS_BUCKET} \
   --capabilities CAPABILITY_NAMED_IAM \
   --region us-east-1
 ```
 
 2. Get the stack outputs:
+
 ```bash
 aws cloudformation describe-stacks \
   --stack-name iq-constellation-analysis \
@@ -87,6 +97,7 @@ aws cloudformation describe-stacks \
 ```
 
 Note the following output values:
+
 - `AgentId`
 - `AgentAliasId`
 - `S3BucketName`
@@ -99,36 +110,42 @@ Note the following output values:
 The Knowledge Base must be created manually as it requires specific configuration:
 
 1. **Navigate to Amazon Bedrock Console**
+
    - Go to **Knowledge bases** in the left navigation
    - Click **Create knowledge base with vector store**
 
 2. **Knowledge Base Details**
+
    - Name: `iq-constellation-kb`
    - Description: `Knowledge base for IQ constellation diagram analysis and RF impairment identification`
    - IAM Role: Create a new service role (or use existing)
    - Click **Next**
 
 3. **Configure Data Source and Parsing/Chunking Strategy**
+
    - Data source name: `iq-constellation-docs`
-   - S3 URI: `s3://${BUCKET_NAME}/iq-constellation-kb-data/`
+   - S3 URI: `s3://${DIFI_RESULTS_BUCKET}/iq-constellation-kb-data/`
    - Select **Bedrock Data Automation (BDA) as parser**
-      - BDA as a parser is ideal for documents rich in images and tables
+     - BDA as a parser is ideal for documents rich in images and tables
    - Select **Default chunking**
    - Click **Next**
 
 4. **Create Embeddings**
+
    - Select Embedding model: `Titan Text Embeddings V2` (or your preferred model)
    - Select **Quick create new vector store**
    - Select **Amazon OpenSearch Serverless** as vector store
    - Click **Next**
 
 5. **Review and Create**
+
    - Review settings
    - Click **Create knowledge base**
 
 6. **Sync Data Source**
+
    - After creation, click **Sync** to ingest the documents
-      - **Note:** Every time you upload new documents to your data source, you will have to re-sync
+     - **Note:** Every time you upload new documents to your data source, you will have to re-sync
    - Wait for sync to complete (this may take several minutes)
 
 7. **Note the Knowledge Base ID**
@@ -138,15 +155,18 @@ The Knowledge Base must be created manually as it requires specific configuratio
 ### Step 4: Add Knowledge Base to Agent
 
 1. **Navigate to Bedrock Agents**
+
    - Go to **Agents** in Amazon Bedrock Console
    - Find your agent (name starts with `iq-constellation-`)
 
 2. **Edit Agent**
+
    - Click on the agent name
    - Scroll to **Knowledge bases** section
    - Click **Add** or **Associate knowledge base**
 
 3. **Configure Knowledge Base Association**
+
    - Select your knowledge base: `iq-constellation-kb`
    - Instructions for knowledge base:
      ```
@@ -164,10 +184,12 @@ The Knowledge Base must be created manually as it requires specific configuratio
 The agent needs permission to access the Knowledge Base. Add an inline policy:
 
 1. **Find the Agent Role**
+
    - In the CloudFormation outputs or Bedrock Agent console, note the agent role name
    - Format: `bedrock-agent-<stack-name>`
 
 2. **Add Inline Policy via IAM Console**
+
    - Go to IAM Console → Roles
    - Search for `bedrock-agent-<stack-name>`
    - Click on the role
@@ -175,7 +197,9 @@ The agent needs permission to access the Knowledge Base. Add an inline policy:
    - Click **Add permissions** → **Create inline policy**
 
 3. **Policy JSON**
+
    - Switch to JSON editor and paste:
+
    ```json
    {
      "Version": "2012-10-17",
@@ -183,23 +207,21 @@ The agent needs permission to access the Knowledge Base. Add an inline policy:
        {
          "Sid": "BedrockKnowledgeBaseAccess",
          "Effect": "Allow",
-         "Action": [
-           "bedrock:Retrieve",
-           "bedrock:RetrieveAndGenerate"
-         ],
+         "Action": ["bedrock:Retrieve", "bedrock:RetrieveAndGenerate"],
          "Resource": "arn:aws:bedrock:us-east-1:YOUR_ACCOUNT_ID:knowledge-base/YOUR_KB_ID"
        }
      ]
    }
    ```
-   - Replace `YOUR_ACCOUNT_ID` and `YOUR_KB_ID` with your values
 
+   - Replace `YOUR_ACCOUNT_ID` and `YOUR_KB_ID` with your values
 
 4. **Name and Create**
    - Policy name: `Bedrock-KB-Access-Policy`
    - Click **Create policy**
 
 Alternatively, add via CLI:
+
 ```bash
 # Set your values
 AGENT_ROLE_NAME="bedrock-agent-iq-constellation-analysis"
@@ -239,8 +261,9 @@ Test the agent in the Bedrock Console:
 1. Go to your agent in the Bedrock Console
 2. Click **Test** in the top right
 3. Try a test query:
+
    ```
-   Analyze the image at bucket: ${BUCKET_NAME}, file: iq-constellation-plots-qpsk/phase_noise-0.jpeg
+   Analyze the image at bucket: ${DIFI_RESULTS_BUCKET}, file: iq-constellation-plots-qpsk/phase_noise-0.jpeg
    ```
 
 4. The agent should:
@@ -254,12 +277,14 @@ Test the agent in the Bedrock Console:
 Run the interactive web interface locally:
 
 1. **Install Dependencies**
+
 ```bash
 cd streamlit-app
 pip install -r requirements.txt
 ```
 
 2. **Set Environment Variables**
+
 ```bash
 # Use the values from CloudFormation outputs
 export BEDROCK_AGENT_ID="YOUR_AGENT_ID"
@@ -268,6 +293,7 @@ export BEDROCK_AGENT_TEST_UI_TITLE="IQ Constellation Analysis"
 ```
 
 Or source the environment file:
+
 ```bash
 # Edit environment_variables.sh with your values
 source environment_variables.sh
@@ -276,6 +302,7 @@ source environment_variables.sh
 3. **Update S3 Bucket Name and Prefix**
 
 Edit `s3_iq_image_detection_ui.py` and update line 117 with your bucket name and S3 prefix for test images:
+
 ```python
 interpret_IQ_image("<YOUR-BUCKET-NAME>", "results/test-file/")
 ```
@@ -284,6 +311,7 @@ interpret_IQ_image("<YOUR-BUCKET-NAME>", "results/test-file/")
 - The second parameter is the S3 prefix/folder containing your test images (e.g., `iq-constellation-plots-qpsk/` or `iq-constellation-plots-8psk/`)
 
 4. **Run Streamlit**
+
 ```bash
 streamlit run s3_iq_image_detection_ui.py
 ```
@@ -297,18 +325,22 @@ streamlit run s3_iq_image_detection_ui.py
 ## How It Works
 
 ### 🧠 Few-Shot Learning
+
 Few-shot prompting is a technique where the model is provided with a small number of example inputs and outputs to guide its behavior on new, similar tasks. The Lambda function demonstrates this by showing the LLM two annotated example images before asking it to analyze a new constellation diagram. This helps the model understand the expected analysis format and the characteristics that distinguish different types of RF impairments.
 
 The Lambda function uses two example images as a guide:
+
 - **Interference example**: Shows random scattering pattern
 - **Phase noise example**: Shows rotational smearing pattern
 
 **For more information**: [Few-Shot Prompting Guide](https://www.promptingguide.ai/techniques/fewshot)
 
 ### 📚 Knowledge Base (RAG)
+
 The knowledge base uses Retrieval Augmented Generation (RAG) to enhance the agent's responses with domain-specific technical documentation. Documents are converted into vector embeddings and stored in Amazon OpenSearch Serverless. When the agent needs information, it retrieves relevant passages from these documents to ground its responses in factual, technical content rather than relying solely on the model's training data.
 
 The knowledge base contains technical documentation about:
+
 - IQ constellation diagrams
 - RF impairments and their characteristics
 - Phase noise vs interference identification
@@ -317,12 +349,15 @@ The knowledge base contains technical documentation about:
 **For more information**: [What is RAG?](https://aws.amazon.com/what-is/retrieval-augmented-generation/)
 
 ### 🤖 Agent Orchestration
+
 The Bedrock Agent acts as an intelligent orchestrator that reasons about user requests and coordinates multiple tools to accomplish tasks. It has access to both the Lambda function (for image analysis) and the Knowledge Base (for technical documentation). The agent determines when to invoke each tool, interprets their outputs, and synthesizes a comprehensive response. This agentic workflow allows the system to handle complex, multi-step analysis tasks autonomously.
 
 **For more information**: [What are AI Agents?](https://huggingface.co/learn/agents-course/en/unit1/what-are-agents)
 
 ### Analysis Output
+
 The agent provides:
+
 1. Modulation type (QPSK, 8PSK, 16-QAM, etc.)
 2. Impairment detection (yes/no)
 3. Impairment classification (phase noise or interference)
@@ -333,21 +368,25 @@ The agent provides:
 ## Troubleshooting
 
 ### Lambda Function Errors
+
 - Verify the handler is set to `lambda_function.lambda_handler`
 - Check CloudWatch Logs for the Lambda function
 - Ensure the Lambda role has S3 and Bedrock permissions
 
 ### Knowledge Base Not Working
+
 - Verify the knowledge base is synced
 - Check that the agent role has the `Bedrock-Access-Policy`
 - Ensure the knowledge base instruction is added to the agent
 
 ### Agent Not Responding
+
 - Verify the agent is "Prepared" after any changes
 - Check that the Lambda permission allows Bedrock to invoke it
 - Test the Lambda function directly first
 
 ### S3 Access Issues
+
 - Verify bucket names match in all configurations
 - Check that files are uploaded to correct prefixes
 - Ensure IAM roles have S3 GetObject permissions
@@ -364,8 +403,8 @@ aws cloudformation delete-stack --stack-name iq-constellation-analysis --region 
 # Go to Bedrock Console → Knowledge bases → Delete
 
 # Empty and delete S3 bucket if needed (if you want to remove it)
-aws s3 rm s3://${BUCKET_NAME} --recursive
-aws s3 rb s3://${BUCKET_NAME}
+aws s3 rm s3://${DIFI_RESULTS_BUCKET} --recursive
+aws s3 rb s3://${DIFI_RESULTS_BUCKET}
 ```
 
 ## License

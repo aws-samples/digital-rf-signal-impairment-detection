@@ -5,9 +5,6 @@ set -e
 STACK_NAME="difi-processor"
 REGION=${AWS_DEFAULT_REGION:-us-east-1}
 REPOSITORY_NAME="difi-processor"
-PCAP_BUCKET_NAME="difi-raw"
-RESULTS_BUCKET_NAME="difi-constellations"
-
 echo "Deploying DIFI processor infrastructure..."
 
 # Get AWS account ID and construct ECR URI
@@ -21,16 +18,16 @@ aws cloudformation deploy \
   --stack-name $STACK_NAME \
   --parameter-overrides \
     ContainerImageURI="$ECR_URI" \
-    PcapBucketName="$PCAP_BUCKET_NAME" \
-    ResultsBucketName="$RESULTS_BUCKET_NAME" \
+    PcapBucketName="$DIFI_RAW_BUCKET" \
+    ResultsBucketName="$DIFI_RESULTS_BUCKET" \
   --capabilities CAPABILITY_IAM \
   --region $REGION
 
 echo ""
 echo "Deployment complete!"
-echo "PCAP Bucket: $PCAP_BUCKET_NAME"
-echo "Results Bucket: $RESULTS_BUCKET_NAME"
+echo "PCAP Bucket: $DIFI_RAW_BUCKET"
+echo "Results Bucket: $DIFI_RESULTS_BUCKET"
 echo ""
-echo "To test, upload a .pcap file to: s3://$PCAP_BUCKET_NAME/"
-echo "Results will appear in: s3://$RESULTS_BUCKET_NAME/"
+echo "To test, upload a .pcap file to: s3://$DIFI_RAW_BUCKET/"
+echo "Results will appear in: s3://$DIFI_RESULTS_BUCKET/"
 
