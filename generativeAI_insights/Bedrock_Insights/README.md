@@ -7,10 +7,11 @@ This project uses Amazon Bedrock Agents with multimodal LLMs to analyze IQ const
 The solution consists of:
 
 - **Amazon Bedrock Agent**: Orchestrates the analysis workflow
-- **AWS Lambda**: Performs image analysis using Claude Sonnet 4.5 with few-shot prompting
+- **AWS Lambda (Image Analysis)**: Performs image analysis using Claude Sonnet 4.5 with few-shot prompting
+- **AWS Lambda (Translation) (optional)**: Translates analysis results to target languages using Amazon Translate
 - **Amazon Bedrock Knowledge Base**: Provides reference documentation for RF impairment analysis
 - **Amazon S3**: Stores constellation images, few-shot examples, and knowledge base documents
-- **Streamlit UI**: Interactive web interface for image selection and analysis
+- **Streamlit UI**: Interactive web interface for image selection, analysis, and multilingual output
 
 ## Prerequisites
 
@@ -20,6 +21,18 @@ The solution consists of:
 - Access to Claude Sonnet 4.5 model in your AWS region
 
 **Note**: Some of the assets may not be available in all regions. This stack was tested in **us-east-1** and **us-west-2**.
+
+## Translation Support (Optional)
+
+This solution includes optional multilingual support that allows analysis results to be translated into multiple languages using Amazon Translate. When enabled:
+
+- A dedicated **Translation Lambda function** is deployed alongside the image analysis Lambda
+- The Bedrock Agent gains a **Translation Action Group** that can translate responses on demand
+- The **Streamlit UI** includes a language selector dropdown for instant translation
+- Supports 75+ languages including Spanish, French, German, Japanese, Chinese, and more
+
+Translation is **disabled by default** to minimize costs. Enable it during deployment by setting the `EnableTranslation` parameter to `yes`
+in the `bedrock-constellation-analysis-translate.yaml` file.
 
 ## Deployment Steps
 
@@ -33,18 +46,24 @@ The solution consists of:
 DIFI_RESULTS_BUCKET=your-difi-processor-results-bucket-name
 ```
 
-2. **Create Lambda deployment package**:
+2. **Create Lambda deployment packages**:
 
 ```bash
-# Zip the Lambda function
+# Zip the image analysis Lambda function
 zip iq-constellation-inference-demo-fxn.zip lambda_function.py
+
+# Zip the translation Lambda function (if using translation feature)
+zip bedrock_translate_lambda.zip bedrock_translate_lambda.py
 ```
 
 3. **Upload Lambda code to S3**:
 
 ```bash
-# Create lambda folder and upload the zip
+# Upload image analysis Lambda
 aws s3 cp iq-constellation-inference-demo-fxn.zip s3://${DIFI_RESULTS_BUCKET}/lambda/iq-constellation-inference-demo-fxn.zip
+
+# Upload translation Lambda (if using translation feature)
+aws s3 cp bedrock_translate_lambda.zip s3://${DIFI_RESULTS_BUCKET}/lambda/bedrock_translate_lambda.zip
 ```
 
 4. **Upload few-shot training examples**:
@@ -76,13 +95,30 @@ aws s3 ls s3://${DIFI_RESULTS_BUCKET}/ --recursive
 
 **Why?** CloudFormation automates the creation of IAM roles, Lambda functions, Bedrock Agent, and their interconnections as infrastructure-as-code. This ensures consistent, repeatable deployments and eliminates manual configuration errors that could occur when creating these resources individually through the console.
 
+**Template Options:**
+- `bedrock-constellation-analysis.yaml` - Base template without translation support
+- `bedrock-constellation-analysis-translate.yaml` - Template with optional translation support
+
 1. Deploy the CloudFormation template:
 
+**Without Translation (default):**
 ```bash
 aws cloudformation create-stack \
   --stack-name iq-constellation-analysis \
   --template-body file://bedrock-constellation-analysis.yaml \
   --parameters ParameterKey=S3BucketName,ParameterValue=${DIFI_RESULTS_BUCKET} \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --region us-east-1
+```
+
+**With Language Translation Enabled:**
+```bash
+aws cloudformation create-stack \
+  --stack-name iq-constellation-analysis \
+  --template-body file://bedrock-constellation-analysis-translate.yaml \
+  --parameters \
+    ParameterKey=S3BucketName,ParameterValue=${DIFI_RESULTS_BUCKET} \
+    ParameterKey=EnableTranslation,ParameterValue=yes \
   --capabilities CAPABILITY_NAMED_IAM \
   --region us-east-1
 ```
@@ -301,7 +337,7 @@ source environment_variables.sh
 
 3. **Update S3 Bucket Name and Prefix**
 
-Edit `s3_iq_image_detection_ui.py` and update line 117 with your bucket name and S3 prefix for test images:
+Edit `s3_iq_image_detection_ui.py` or `s3_iq_image_detection_ui_translate.py` and update the line near the end of the script with your bucket name and S3 prefix for test images:
 
 ```python
 interpret_IQ_image("<YOUR-BUCKET-NAME>", "results/test-file/")
@@ -316,11 +352,17 @@ interpret_IQ_image("<YOUR-BUCKET-NAME>", "results/test-file/")
 streamlit run s3_iq_image_detection_ui.py
 ```
 
+or, with language translation
+```bash
+streamlit run s3_iq_image_detection_ui_translate.py
+```
+
 5. **Use the UI**
    - Open browser to `http://localhost:8501`
    - Select images from the S3 bucket
    - Click "Load Selected Image" to analyze
    - View the agent's analysis results
+   - **Optional**: Select a target language from the dropdown to translate results
 
 ## How It Works
 
