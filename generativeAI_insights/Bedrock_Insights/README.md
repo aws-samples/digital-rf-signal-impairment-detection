@@ -34,6 +34,11 @@ This solution includes optional multilingual support that allows analysis result
 Translation is **disabled by default** to minimize costs. Enable it during deployment by setting the `EnableTranslation` parameter to `yes`
 in the `bedrock-constellation-analysis-translate.yaml` file, or with `ParameterKey=EnableTranslation,ParameterValue=yes` when creating the stack.
 
+## Sample Output
+Below is a screenshot of the solution describing an 8-PSK IQ constellation with moderate noise.
+The results are translated into French.
+
+
 ## Deployment Steps
 
 ### Step 1: Prepare S3 Bucket and Lambda Code
