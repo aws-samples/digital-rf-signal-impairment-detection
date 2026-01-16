@@ -37,6 +37,7 @@ in the `bedrock-constellation-analysis-translate.yaml` file, or with `ParameterK
 ## Sample Output
 Below is a screenshot of the solution describing an 8-PSK IQ constellation with moderate noise.
 The results are translated into French.
+<img width="1088" height="933" alt="iq-agent-translate-fr-Screenshot" src="https://github.com/user-attachments/assets/49854b48-3e2a-4f43-a803-acb01b8edb8d" />
 
 
 ## Deployment Steps
