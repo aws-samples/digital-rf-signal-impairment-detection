@@ -32,7 +32,7 @@ This solution includes optional multilingual support that allows analysis result
 - Supports 75+ languages including Spanish, French, German, Japanese, Chinese, and more
 
 Translation is **disabled by default** to minimize costs. Enable it during deployment by setting the `EnableTranslation` parameter to `yes`
-in the `bedrock-constellation-analysis-translate.yaml` file.
+in the `bedrock-constellation-analysis-translate.yaml` file, or with `ParameterKey=EnableTranslation,ParameterValue=yes` when creating the stack.
 
 ## Deployment Steps
 
@@ -114,7 +114,7 @@ aws cloudformation create-stack \
 **With Language Translation Enabled:**
 ```bash
 aws cloudformation create-stack \
-  --stack-name iq-constellation-analysis \
+  --stack-name iq-constellation-analysis-translate \
   --template-body file://bedrock-constellation-analysis-translate.yaml \
   --parameters \
     ParameterKey=S3BucketName,ParameterValue=${DIFI_RESULTS_BUCKET} \
