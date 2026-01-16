@@ -439,6 +439,10 @@ The agent provides:
 - Check that files are uploaded to correct prefixes
 - Ensure IAM roles have S3 GetObject permissions
 
+### Language translation issues
+
+- Some languages may not render properly on certain browsers. For example, to correctly display the Chinese language you may need to install `google-noto-sans-cjk-fonts`
+
 ## Cleanup
 
 To remove all resources:
