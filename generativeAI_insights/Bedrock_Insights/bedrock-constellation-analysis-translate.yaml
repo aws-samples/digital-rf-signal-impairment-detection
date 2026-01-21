@@ -45,7 +45,7 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
       Policies:
         - PolicyName: BedrockS3Access
           PolicyDocument:
@@ -74,7 +74,7 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
       Policies:
         - PolicyName: TranslateAccess
           PolicyDocument:
@@ -91,7 +91,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub "iq-constellation-inference-demo-fxn-${AWS::StackName}"
-      Runtime: python3.13
+      Runtime: python3.12
       Handler: lambda_function.lambda_handler
       Role: !GetAtt LambdaExecutionRole.Arn
       Timeout: 120
@@ -124,7 +124,7 @@ Resources:
       FunctionName: !Ref TranslateLambdaFunction
       Action: lambda:InvokeFunction
       Principal: bedrock.amazonaws.com
-      SourceArn: !Sub arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:agent/*
+      SourceArn: !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:agent/*"
 
   # Agent Role
   AgentRole:
@@ -142,9 +142,9 @@ Resources:
               StringEquals:
                 "aws:SourceAccount": !Ref AWS::AccountId
               ArnLike:
-                "aws:SourceArn": !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:agent/*"
+                "aws:SourceArn": !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:agent/*"
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonBedrockLimitedAccess
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonBedrockLimitedAccess"
       Policies:
         - PolicyName: BedrockModelAccess
           PolicyDocument:
@@ -157,7 +157,7 @@ Resources:
                   - bedrock:GetInferenceProfile
                   - bedrock:GetFoundationModel
                 Resource:
-                  - !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelImageId}"
+                  - !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelImageId}"
         - PolicyName: KnowledgeBaseAccess
           PolicyDocument:
             Version: "2012-10-17"
@@ -166,7 +166,7 @@ Resources:
                 Action:
                   - bedrock:Retrieve
                   - bedrock:RetrieveAndGenerate
-                Resource: !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:knowledge-base/*"
+                Resource: !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:knowledge-base/*"
 
   # Bedrock Agent (without Knowledge Base initially)
   BedrockAgent:
@@ -174,7 +174,7 @@ Resources:
     Properties:
       AgentName: !Sub "iq-constellation-${AWS::StackName}"
       AgentResourceRoleArn: !GetAtt AgentRole.Arn
-      FoundationModel: !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelImageId}"
+      FoundationModel: !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelImageId}"
       Description: "Agent which detects impairments in IQ constellation images"
       Instruction: |
         You are an expert RF Analyst specializing in IQ constellation modulation diagrams. 
