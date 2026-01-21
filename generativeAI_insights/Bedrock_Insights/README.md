@@ -20,7 +20,7 @@ The solution consists of:
 - Python 3.9+ (for Streamlit app)
 - Access to Claude Sonnet 4.5 model in your AWS region
 
-**Note**: Some of the assets may not be available in all regions. This stack was tested in **us-east-1** and **us-west-2**.
+**Note**: Some of the assets may not be available in all regions. This stack was tested in **us-east-1**, **us-west-2**, and **us-gov-west-1**.
 
 ## Translation Support (Optional)
 
@@ -129,6 +129,19 @@ aws cloudformation create-stack \
   --region us-east-1
 ```
 
+**GovCloud Deployment (us-gov-west-1) with language translation support:**
+```bash
+aws cloudformation create-stack \
+  --stack-name iq-constellation-analysis \
+  --template-body file://bedrock-constellation-analysis-translate.yaml \
+  --parameters \
+    ParameterKey=S3BucketName,ParameterValue=${DIFI_RESULTS_BUCKET} \
+    ParameterKey=ModelImageId,ParameterValue=us-gov.anthropic.claude-sonnet-4-5-20250929-v1:0 \
+    ParameterKey=EnableTranslation,ParameterValue=yes \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --region us-gov-west-1
+```
+
 2. Get the stack outputs:
 
 ```bash
@@ -145,7 +158,7 @@ Note the following output values:
 - `S3BucketName`
 - `LambdaFunctionArn`
 
-### Step 3: Create Knowledge Base
+### Step 3: Create Knowledge Base (optional)
 
 **Why?** Bedrock Knowledge Bases require a vector database to store document embeddings for semantic search. Amazon OpenSearch Serverless provides this vector store, but its collections and indices cannot be dynamically created through CloudFormation. The Knowledge Base creation process requires manual configuration of the vector store, embedding model selection, and data source synchronization, which must be done through the console or API.
 
@@ -194,7 +207,7 @@ The Knowledge Base must be created manually as it requires specific configuratio
    - You'll need this for the next step
    - Format: `XXXXXXXXXX` (10 characters)
 
-### Step 4: Add Knowledge Base to Agent
+### Step 4: Add Knowledge Base to Agent (optional)
 
 1. **Navigate to Bedrock Agents**
 
@@ -297,6 +310,10 @@ aws iam put-role-policy \
 ```
 
 ### Step 6: Test the Agent
+
+**Note**: If testing in GovCloud, you need to first request model access. For Claude Sonnet 4.5 
+select `Model Access` in the left-hand pane -> Anthropic -> Claude Sonnet 4.5 -> Request Model Access. 
+Then click `Next` and `Submit`. Access is typically granted momentarily.
 
 Test the agent in the Bedrock Console:
 
