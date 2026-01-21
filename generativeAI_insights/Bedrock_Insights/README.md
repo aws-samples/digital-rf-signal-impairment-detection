@@ -234,7 +234,7 @@ The Knowledge Base must be created manually as it requires specific configuratio
    - Click **Prepare** on the chat window to the right
    - Wait for preparation to complete
 
-### Step 5: Add Bedrock Access Policy to Agent Role
+### Step 5: Add Bedrock Access Policy to Agent Role (optional)
 
 The agent needs permission to access the Knowledge Base. Add an inline policy:
 
