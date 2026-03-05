@@ -99,9 +99,13 @@ aws s3 ls s3://${DIFI_RESULTS_BUCKET}/ --recursive
 
 ### Step 2: Deploy CloudFormation Stack
 
-**Why?** CloudFormation automates the creation of IAM roles, Lambda functions, Bedrock Agent, and their interconnections as infrastructure-as-code. This ensures consistent, repeatable deployments and eliminates manual configuration errors that could occur when creating these resources individually through the console.
+**Why?** CloudFormation automates the creation of IAM roles, Lambda functions, Bedrock Agent, and their interconnections as infrastructure-as-code. 
+This ensures consistent, repeatable deployments and eliminates manual configuration errors that could occur when creating these resources individually through the console.
 
 **Template Options:**
+
+Deploy one of the following Cloudformation templates: -
+
 - `bedrock-constellation-analysis.yaml` - Base template without translation support
 - `bedrock-constellation-analysis-translate.yaml` - Template with optional translation support
 
@@ -117,10 +121,10 @@ aws cloudformation create-stack \
   --region us-east-1
 ```
 
-**With Language Translation Enabled:**
+**OR, With Language Translation Enabled:**
 ```bash
 aws cloudformation create-stack \
-  --stack-name iq-constellation-analysis-translate \
+  --stack-name iq-constellation-analysis \
   --template-body file://bedrock-constellation-analysis-translate.yaml \
   --parameters \
     ParameterKey=S3BucketName,ParameterValue=${DIFI_RESULTS_BUCKET} \
@@ -129,7 +133,7 @@ aws cloudformation create-stack \
   --region us-east-1
 ```
 
-**GovCloud Deployment (us-gov-west-1) with language translation support:**
+**OR, GovCloud Deployment (us-gov-west-1) with language translation support:**
 ```bash
 aws cloudformation create-stack \
   --stack-name iq-constellation-analysis \
@@ -160,7 +164,9 @@ Note the following output values:
 
 ### Step 3: Create Knowledge Base (optional)
 
-**Why?** Bedrock Knowledge Bases require a vector database to store document embeddings for semantic search. Amazon OpenSearch Serverless provides this vector store, but its collections and indices cannot be dynamically created through CloudFormation. The Knowledge Base creation process requires manual configuration of the vector store, embedding model selection, and data source synchronization, which must be done through the console or API.
+**Why?** Bedrock Knowledge Bases require a vector database to store document embeddings for semantic search. 
+Amazon OpenSearch Serverless provides this vector store, but its collections and indices cannot be dynamically created through CloudFormation. 
+The Knowledge Base creation process requires manual configuration of the vector store, embedding model selection, and data source synchronization, which must be done through the console or API.
 
 The Knowledge Base must be created manually as it requires specific configuration:
 
@@ -360,7 +366,8 @@ source environment_variables.sh
 
 3. **Update S3 Bucket Name and Prefix**
 
-Edit `s3_iq_image_detection_ui.py` or `s3_iq_image_detection_ui_translate.py` and update the line near the end of the script with your bucket name and S3 prefix for test images:
+Edit `s3_iq_image_detection_ui.py` or `s3_iq_image_detection_ui_translate.py` and update the line near the end of the script with 
+your bucket name and S3 prefix for test images:
 
 ```python
 interpret_IQ_image("<YOUR-BUCKET-NAME>", "results/test-file/")
@@ -391,7 +398,9 @@ streamlit run s3_iq_image_detection_ui_translate.py
 
 ### 🧠 Few-Shot Learning
 
-Few-shot prompting is a technique where the model is provided with a small number of example inputs and outputs to guide its behavior on new, similar tasks. The Lambda function demonstrates this by showing the LLM two annotated example images before asking it to analyze a new constellation diagram. This helps the model understand the expected analysis format and the characteristics that distinguish different types of RF impairments.
+Few-shot prompting is a technique where the model is provided with a small number of example inputs and outputs to guide its behavior on new, similar tasks. 
+The Lambda function demonstrates this by showing the LLM two annotated example images before asking it to analyze a new constellation diagram. 
+This helps the model understand the expected analysis format and the characteristics that distinguish different types of RF impairments.
 
 The Lambda function uses two example images as a guide:
 
@@ -402,7 +411,9 @@ The Lambda function uses two example images as a guide:
 
 ### 📚 Knowledge Base (RAG)
 
-The knowledge base uses Retrieval Augmented Generation (RAG) to enhance the agent's responses with domain-specific technical documentation. Documents are converted into vector embeddings and stored in Amazon OpenSearch Serverless. When the agent needs information, it retrieves relevant passages from these documents to ground its responses in factual, technical content rather than relying solely on the model's training data.
+The knowledge base uses Retrieval Augmented Generation (RAG) to enhance the agent's responses with domain-specific technical documentation. 
+Documents are converted into vector embeddings and stored in Amazon OpenSearch Serverless. 
+When the agent needs information, it retrieves relevant passages from these documents to ground its responses in factual, technical content rather than relying solely on the model's training data.
 
 The knowledge base contains technical documentation about:
 
@@ -478,4 +489,4 @@ aws s3 rb s3://${DIFI_RESULTS_BUCKET}
 
 ## License
 
-[License information to be added]
+See [Repository license](/LICENSE)
