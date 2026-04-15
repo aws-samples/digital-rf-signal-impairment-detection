@@ -13,7 +13,6 @@ This solution path leverages **generative AI** to analyze constellation plots fo
 - **Amazon S3** — Stores raw DIFI packets (input), constellation diagrams, and inference results (output)
 - **AWS Lambda** — Serverless DIFI packet processor that extracts I/Q data and generates constellation plots
 - **Amazon Bedrock** — Generative AI service providing multimodal analysis of constellation diagrams via Claude Sonnet 4.5
-- **Amazon QuickSight** — Dashboard for visualizing inference results and signal quality trends
 
 ### 🔄 [DIFI_Processor](./DIFI_Processor/)
 
