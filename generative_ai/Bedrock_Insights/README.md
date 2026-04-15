@@ -489,4 +489,4 @@ aws s3 rb s3://${DIFI_RESULTS_BUCKET}
 
 ## License
 
-See [Repository license](/LICENSE)
+See [Repository license](../../LICENSE)

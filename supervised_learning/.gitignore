@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# AutoGluon model outputs
+AutogluonModels/
+
+# OS
+.DS_Store
+
+# Generated data (uncomment to ignore regenerated data)
+# data_generation/generator/data/

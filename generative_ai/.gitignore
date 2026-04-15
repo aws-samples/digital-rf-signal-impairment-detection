@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+
+# Lambda deployment packages
+*.zip
+
+# CDK
+.cdk.staging/
+cdk.out/
+cdk.context.json
+
+# OS
+.DS_Store
+
+# Local test outputs
+output.txt
+test.sh

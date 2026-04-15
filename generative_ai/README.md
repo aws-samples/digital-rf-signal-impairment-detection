@@ -127,9 +127,10 @@ Claude Sonnet 4.5's vision capabilities enable direct analysis of constellation 
 
 - **DIFI_Processor**: See [DIFI_Processor/README.md](./DIFI_Processor/README.md) for detailed setup and usage
 - **Bedrock_Insights**: See [Bedrock_Insights/README.md](./Bedrock_Insights/README.md) for AI configuration and deployment
+- **Supervised Learning**: See [Supervised Learning README](../supervised_learning/README.md) for the traditional ML approach
 - **AWS Documentation**: [Amazon Bedrock User Guide](https://docs.aws.amazon.com/bedrock/)
 - **DIFI Standard**: [Digital IF Interoperability Consortium](https://dificonsortium.org/)
 
 ## License
 
-This library is licensed under the MIT-0 License. See the LICENSE file.
+This library is licensed under the MIT-0 License. See the [LICENSE](../LICENSE) file.
