@@ -4,11 +4,16 @@ This solution path leverages **generative AI** to analyze constellation plots fo
 
 ## Solution Architecture
 
-The generative AI solution consists of two main components that work together to create an end-to-end pipeline:
+![Generative AI Architecture](../supervised_learning/repository_images/generative_AI_Architecture.png)
 
-```
-PCAP Files → DIFI_Processor → Constellation Diagrams → Bedrock_Insights → AI Analysis
-```
+> **Note:** The waveform on EC2, networking services (Transit Gateway, Direct Connect), and the on-premise lab/modem are outside the scope of this solution. This solution focuses on the pipeline from Raw DIFI Packets (S3) through to the inference results and dashboard.
+
+### AWS Services Used
+
+- **Amazon S3** — Stores raw DIFI packets (input), constellation diagrams, and inference results (output)
+- **AWS Lambda** — Serverless DIFI packet processor that extracts I/Q data and generates constellation plots
+- **Amazon Bedrock** — Generative AI service providing multimodal analysis of constellation diagrams via Claude Sonnet 4.5
+- **Amazon QuickSight** — Dashboard for visualizing inference results and signal quality trends
 
 ### 🔄 [DIFI_Processor](./DIFI_Processor/)
 

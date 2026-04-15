@@ -4,9 +4,14 @@ This solution path applies statistical feature engineering and supervised machin
 
 ## Solution Architecture
 
-```
-IQ Data (CSV) → Feature Engineering → AutoGluon Training → Classifier Model → Inference → S3 Notifications
-```
+![Supervised Learning Architecture](repository_images/supervised_learning_architecture.png)
+
+### AWS Services Used
+
+- **Amazon S3** — Stores raw IQ packet data (input) and inference results (output)
+- **Amazon SageMaker Notebook** — JupyterLab environment for feature engineering, training, and inference
+- **Amazon SageMaker Training/Inference** — Runs AutoGluon model training and inference workloads
+- **Amazon SageMaker Model** — Persists the trained classifier for reuse
 
 ### Pipeline Overview
 
